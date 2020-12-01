@@ -20,6 +20,13 @@ jobs:
             build
             --user
             
+        - name: Install PISCES
+          run: >-
+            python -m
+            pip install
+            -e .
+            --user
+            
         - name: Build a binary wheel and a source tarball
           run: >-
             python -m
