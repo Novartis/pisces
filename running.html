@@ -77,47 +77,6 @@ allowed. If the data are unpaired, just pass fastq files using <code class="docu
 <p>Sample name (<code class="docutils literal notranslate"><span class="pre">-n,</span> <span class="pre">--name</span></code>), output directory (<code class="docutils literal notranslate"><span class="pre">-o,</span> <span class="pre">--out</span></code>) and total
 number of CPU threads to utilize (<code class="docutils literal notranslate"><span class="pre">-p,</span> <span class="pre">--threads</span></code>) may be specified
 explicitly, or default to automatic values.</p>
-</div>
-<div class="section" id="pisces-submit">
-<span id="submit-example"></span><h2>pisces submit<a class="headerlink" href="#pisces-submit" title="Permalink to this headline">¶</a></h2>
-<p>PISCES contains a command for running multiple <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">run</span></code> jobs on a DRMAA-aware
-compute cluster (sge, uge, slurm). Jobs are specified using the <code class="docutils literal notranslate"><span class="pre">metadata.csv</span></code> table
-by adding data locations for the FASTQ files. Extra arguments to <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">run</span></code> are passed to
-<code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">submit</span></code> and appended to each job before submission to the cluster. The DRMMA library
-needs to be accessible in your environment: <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">DRMAA_LIBRARY_PATH=/path/to/libdrmaa.so</span></code>.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pisces submit --metadata metadata.csv <span class="o">[</span>pisces run args<span class="o">]</span>
-</pre></div>
-</div>
-<p>After job submission, <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">submit</span></code> will monitor the progress of submitted
-jobs. If you want to exit this command, pressing <code class="docutils literal notranslate"><span class="pre">Ctrl+C</span></code> will prompt whether
-to delete the current jobs. Job progress (running, completion, or failure) can
-be checked at any time by re-running <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">submit</span></code> in the directory where
-<code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">submit</span></code> was originally run. If you need to later re-run <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">submit</span></code> in
-the same directory you must first delete the <code class="docutils literal notranslate"><span class="pre">.pisces</span></code> directory.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ pisces submit --help
-usage: pisces submit [-h] [--metadata METADATA] [--workdir WORKDIR] [--local]
-                     [--batch] [--runtime RUNTIME]
-                     [--max-memory {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127}]
-                     [--dry-run]
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --metadata METADATA, -m METADATA
-                        metadata.csv file containing (at minimum) SampleID,
-                        Fastq1, Fastq2, Directory columns
-  --workdir WORKDIR, -w WORKDIR
-                        directory where PISCES will create the .pisces folder
-                        to contain jobs scripts, logs, and run information
-  --local               run jobs on the local machine
-  --batch               after submitting jobs using DRMAA, exit without
-                        monitoring job status
-  --runtime RUNTIME, -rt RUNTIME
-                        runtime in seconds for each cluster job
-  --max-memory {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127}, -mm {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127}
-                        memory in GB required per job
-  --dry-run, -n         print job commands and then exit
-</pre></div>
-</div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pisces run -fq1 lane1_R1_001.fastq.gz lane1_R1_002.fastq.gz <span class="se">\</span>
              -fq2 lane1_R2_001.fastq.gz lane1_R2_002.fastq.gz <span class="se">\</span>
              -p <span class="m">12</span> <span class="se">\</span>
@@ -170,6 +129,47 @@ optional arguments:
   --sra-enc-dir SRA_ENC_DIR
                         path to NCBI SRA project directory for encrypted dbGaP
                         data
+</pre></div>
+</div>
+</div>
+<div class="section" id="pisces-submit">
+<span id="submit-example"></span><h2>pisces submit<a class="headerlink" href="#pisces-submit" title="Permalink to this headline">¶</a></h2>
+<p>PISCES contains a command for running multiple <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">run</span></code> jobs on a DRMAA-aware
+compute cluster (sge, uge, slurm). Jobs are specified using the <code class="docutils literal notranslate"><span class="pre">metadata.csv</span></code> table
+by adding data locations for the FASTQ files. Extra arguments to <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">run</span></code> are passed to
+<code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">submit</span></code> and appended to each job before submission to the cluster. The DRMMA library
+needs to be accessible in your environment: <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">DRMAA_LIBRARY_PATH=/path/to/libdrmaa.so</span></code>.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pisces submit --metadata metadata.csv <span class="o">[</span>pisces run args<span class="o">]</span>
+</pre></div>
+</div>
+<p>After job submission, <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">submit</span></code> will monitor the progress of submitted
+jobs. If you want to exit this command, pressing <code class="docutils literal notranslate"><span class="pre">Ctrl+C</span></code> will prompt whether
+to delete the current jobs. Job progress (running, completion, or failure) can
+be checked at any time by re-running <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">submit</span></code> in the directory where
+<code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">submit</span></code> was originally run. If you need to later re-run <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">submit</span></code> in
+the same directory you must first delete the <code class="docutils literal notranslate"><span class="pre">.pisces</span></code> directory.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ pisces submit --help
+usage: pisces submit [-h] [--metadata METADATA] [--workdir WORKDIR] [--local]
+                     [--batch] [--runtime RUNTIME]
+                     [--max-memory {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127}]
+                     [--dry-run]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --metadata METADATA, -m METADATA
+                        metadata.csv file containing (at minimum) SampleID,
+                        Fastq1, Fastq2, Directory columns
+  --workdir WORKDIR, -w WORKDIR
+                        directory where PISCES will create the .pisces folder
+                        to contain jobs scripts, logs, and run information
+  --local               run jobs on the local machine
+  --batch               after submitting jobs using DRMAA, exit without
+                        monitoring job status
+  --runtime RUNTIME, -rt RUNTIME
+                        runtime in seconds for each cluster job
+  --max-memory {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127}, -mm {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127}
+                        memory in GB required per job
+  --dry-run, -n         print job commands and then exit
 </pre></div>
 </div>
 </div>
@@ -344,13 +344,13 @@ to pass in the top level directory when all PISCES runs in the directory
 are desired.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ pisces summarize-qc
 
-12-01 16:08 INFO     Searching for directories.
+12-01 16:20 INFO     Searching for directories.
 
 0.00File [00:00, ?File/s]
                          
-12-01 16:08 INFO     Found 0 samples.
+12-01 16:20 INFO     Found 0 samples.
 
-12-01 16:08 INFO     Finished.
+12-01 16:20 INFO     Finished.
 </pre></div>
 </div>
 </div>

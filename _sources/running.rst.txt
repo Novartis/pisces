@@ -55,6 +55,16 @@ Sample name (``-n, --name``), output directory (``-o, --out``) and total
 number of CPU threads to utilize (``-p, --threads``) may be specified
 explicitly, or default to automatic values.
 
+
+.. code:: shell
+
+    $ pisces run -fq1 lane1_R1_001.fastq.gz lane1_R1_002.fastq.gz \
+                 -fq2 lane1_R2_001.fastq.gz lane1_R2_002.fastq.gz \
+                 -p 12 \
+                 -o PISCES_output_sample1
+
+.. command-output:: pisces run --help
+
 .. _submit_example:
 
 pisces submit
@@ -78,15 +88,6 @@ be checked at any time by re-running ``pisces submit`` in the directory where
 the same directory you must first delete the ``.pisces`` directory.
 
 .. command-output:: pisces submit --help
-
-.. code:: shell
-
-    $ pisces run -fq1 lane1_R1_001.fastq.gz lane1_R1_002.fastq.gz \
-                 -fq2 lane1_R2_001.fastq.gz lane1_R2_002.fastq.gz \
-                 -p 12 \
-                 -o PISCES_output_sample1
-
-.. command-output:: pisces run --help
 
 .. _summarize_example:
 
