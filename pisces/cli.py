@@ -320,6 +320,7 @@ def create_parser(args=None):
 
     if args:
         args, _ = parser.parse_known_args(args)
+        return args
     else:
         args, _ = parser.parse_known_args()
 

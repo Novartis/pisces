@@ -6,5 +6,5 @@ class TestRun(TestCase):
 
     def test_defaults_config(self):
         "Test that default configuration is set."
-        args = create_parser().parse_args('submit -m metadata.csv')
+        args = create_parser(args='submit -m metadata.csv')
         assert 'human' in args.conf.keys()
