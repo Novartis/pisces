@@ -1,0 +1,8 @@
+Features,PISCES,VIPER
+Quality control,Y,Y
+Differential Expression,Y,Y
+Packaged for general use,Y,N
+Support for new species,Y,Y
+Virus detection,Y,Y
+Cluster supported,Y,D
+fingerprinting,Y,N

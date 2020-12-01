@@ -1,0 +1,52 @@
+{
+    "human": {
+        "downloads": "$HOME/pisces/downloads",
+        "index_dir": "$HOME/pisces",
+        "default": "gencode_basic",
+        "index": {
+            "gencode_basic": {
+                "gtfs": ["ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.basic.annotation.gtf.gz"],
+                "fastas": ["ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/GRCh38.p13.genome.fa.gz"],
+                "extra_fastas": [],
+                "options": {
+                    "-k": 31,
+                    "infer_features": false
+                }
+            }
+        }
+    },
+    "mouse": {
+        "downloads": "$HOME/pisces/downloads",
+        "index_dir": "$HOME/pisces",
+        "default": "gencode_basic",
+        "index": {
+            "gencode_basic": {
+                "gtfs": ["ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M23/gencode.vM23.basic.annotation.gtf.gz"],
+                "fastas": ["ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M23/GRCm38.p6.genome.fa.gz"],
+                "extra_fastas": [],
+                "options": {
+                    "-k": 31,
+                    "infer_features": false
+                }
+            }
+        }
+    },
+    "human-mouse": {
+        "downloads": "$HOME/pisces/downloads",
+        "index_dir": "$HOME/pisces",
+        "default": "gencode_basic",
+        "index": {
+            "gencode_basic": {
+                "gtfs": ["ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M23/gencode.vM23.basic.annotation.gtf.gz",
+                    "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/gencode.v32.basic.annotation.gtf.gz"
+                ],
+                "fastas": ["ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M23/GRCm38.p6.genome.fa.gz", "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/GRCh38.p13.genome.fa.gz"],
+                "extra_fastas": [],
+                "options": {
+                    "-k": 31,
+                    "infer_features": false
+                }
+            }
+        }
+    }
+}
