@@ -1,31 +1,5 @@
 Running
 =======
-Novartis HPC environment
-------------------------
-PISCES is packaged as a ``module`` file which must be added to your ``$MODULEPATH``. You can set this in your ``${HOME}/.bashrc`` file for persistence:
-
-.. code:: shell
-
-  export MODULEPATH=${MODULEPATH}:/usr/prog/modules/all:/cm/shared/modulefiles/:/usr/prog/onc/modules/
-
-You can then load PISCES by running:
-
-.. code:: shell
-
-  $ module load pisces/2018.04.1
-
-  or
-
-  $ module load pisces # for the latest version
-
-If you'll be submitting jobs to the HPC compute notes you'll also need ``uge``:
-
-.. code:: shell
-
-  $ module load uge
-
-
-PISCES index files are pre-built on the NIBR HPC environment, so you can directly skip to the section on `pisces submit`_.
 
 .. _index_example:
 
@@ -46,12 +20,17 @@ You can also pass in a custom ``--config`` file:
 
 .. code:: shell
 
-    $ pisces --config index
+    $ pisces --config config.json index
 
 .. _run_example:
 
 pisces run
 ----------
+
+.. note::
+    Most users will want to use ``pisces submit`` to process an entire experiment on either a local machine or an 
+    HPC cluster. Please see submit_example_ for usage.
+    
 .. code:: shell
 
     $ pisces run -fq1 lane1_R1_001.fastq.gz lane1_R1_002.fastq.gz \
@@ -61,10 +40,6 @@ In the most basic form, you can specify only the fastq files (as a list
 of forward and reverse reads) and other parameters will be auto-detected
 or selected from default values. Either paired or unpaired libraries are
 allowed. If the data are unpaired, just pass fastq files using ``-fq1``.
-
-.. todo::
-
-  Fix the link to default config file
 
 Data and program paths are defined using a default 
 :doc:`config` which can be specified at runtime using the
@@ -79,6 +54,30 @@ Data and program paths are defined using a default
 Sample name (``-n, --name``), output directory (``-o, --out``) and total
 number of CPU threads to utilize (``-p, --threads``) may be specified
 explicitly, or default to automatic values.
+
+.. _submit_example:
+
+pisces submit
+-------------
+
+PISCES contains a command for running multiple ``pisces run`` jobs on a DRMAA-aware
+compute cluster (sge, uge, slurm). Jobs are specified using the ``metadata.csv`` table
+by adding data locations for the FASTQ files. Extra arguments to ``pisces run`` are passed to
+``pisces submit`` and appended to each job before submission to the cluster. The DRMMA library
+needs to be accessible in your environment: ``export DRMAA_LIBRARY_PATH=/path/to/libdrmaa.so``.
+
+.. code:: shell
+
+    $ pisces submit --metadata metadata.csv [pisces run args]
+
+After job submission, ``pisces submit`` will monitor the progress of submitted
+jobs. If you want to exit this command, pressing ``Ctrl+C`` will prompt whether
+to delete the current jobs. Job progress (running, completion, or failure) can
+be checked at any time by re-running ``pisces submit`` in the directory where
+``pisces submit`` was originally run. If you need to later re-run ``pisces submit`` in
+the same directory you must first delete the ``.pisces`` directory.
+
+.. command-output:: pisces submit --help
 
 .. code:: shell
 
@@ -96,16 +95,16 @@ pisces summarize-expression
 
 .. code:: shell
 
-    $ pisces summarize Sample1/PISCES Sample2/PISCES Sample3/PISCES ...
+    $ pisces summarize-expression Sample1/PISCES Sample2/PISCES Sample3/PISCES ...
 
 or
 
 .. code:: shell
 
-    $ pisces summarize -m metadata.csv
+    $ pisces summarize-expression -m metadata.csv
 
 You can summarize transcript-level expression to gene-level and make TPM
-and counts matrices using ``pisces summarize``. Required arguments are
+and counts matrices using ``pisces summarize-expression``. Required arguments are
 the directories specified as ``--out`` from ``pisces run``. Optionally
 you can supply a metadata matrix in CSV format similar to `this
 example <data/metadata_example.csv>`__:
@@ -148,10 +147,10 @@ pass a formula for differential expression using DESeq2 by specifying
 ``--spotfire-template`` option copies a template Spotfire file useful
 for visualizing the resulting data matrices.
 
-By default ``pisces summarize`` matches metadata to input sample
+By default ``pisces summarize-expression`` matches metadata to input sample
 directories based on the order of directories passed as positional
 arguments. E.g:
-``pisces summarize -m metadata.csv /Sample1 /Sample2 ...``. Sometimes
+``pisces summarize-expression -m metadata.csv /Sample1 /Sample2 ...``. Sometimes
 this is cumbersome, so there are two options for encoding input
 locations in the metadata file:
 
@@ -175,19 +174,19 @@ As paths to salmon "quant.sf" files:
 | Sample2    | DMSO        | /path/to/PISCES\_run2/quant.sf   |
 +------------+-------------+----------------------------------+
 
-.. command-output:: pisces summarize-expression --help
+.. command-output:: pisces summarize-expression
 
 .. _qc_example:
 
 pisces summarize-qc
 -------------------
 
-QC tables are created using the ``pisces qc`` command. PISCES samples
+QC tables are created using the ``pisces summarize-qc`` command. PISCES samples
 are discovered recursively for each directory passed to the tool.
 
 .. code:: shell
 
-    $ pisces qc . \
+    $ pisces summarize-qc . \
                 --spotfire-template QC.dxp \
                 --tab QC.table.txt \
                 --tall QC.skinny.txt \
@@ -197,7 +196,7 @@ or
 
 .. code:: shell
 
-    $ pisces qc --metadata metadata.csv \
+    $ pisces summarize-qc --metadata metadata.csv \
                 --spotfire-template QC.dxp \
                 --tab QC.table.txt \
                 --tall QC.skinny.txt \
@@ -207,31 +206,4 @@ Note that directories are searched recursively and so it is sufficient
 to pass in the top level directory when all PISCES runs in the directory
 are desired.
 
-.. command-output:: pisces summarize-qc --help
-
-.. _submit_example:
-
-pisces submit
-------------------
-PISCES contains a command for running multiple ``pisces run`` jobs on a DRMAA-aware
-compute cluster (sge, uge, slurm). Jobs are specified using the ``metadata.csv`` table
-by adding data locations for the FASTQ files. Extra arguments to ``pisces run`` are passed to
-``pisces submit`` and appended to each job before submission to the cluster. The DRMMA library
-needs to be accessible in your environment: ``export DRMAA_LIBRARY_PATH=/cm/shared/apps/uge/current/lib/lx-amd64/libdrmaa.so``.
-
-.. code:: shell
-
-    $ pisces submit --metadata metadata.csv [pisces run args]
-
-.. raw:: html
-
-    <script type="text/javascript" src="https://asciinema.org/a/mdA7nJ91l8BjIeFjNmmWBjds4.js" id="asciicast-mdA7nJ91l8BjIeFjNmmWBjds4" async></script>
-
-After job submission, ``pisces submit`` will monitor the progress of submitted
-jobs. If you want to exit this command, pressing ``Ctrl+C`` will prompt whether
-to delete the current jobs. Job progress (running, completion, or failure) can
-be checked at any time by re-running ``pisces submit`` in the directory where
-``pisces submit`` was originally run. If you need to later re-run ``pisces submit`` in
-the same directory you must first delete the ``.pisces`` directory.
-
-.. command-output:: pisces submit --help
+.. command-output:: pisces summarize-qc

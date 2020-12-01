@@ -1,7 +1,4 @@
-include pisces/R/packrat/init.R
-include pisces/R/packrat/packrat.*
 include pisces/R/*.R
-recursive-include pisces/R/packrat/src *
 recursive-include pisces/scripts *
 include pisces/config.json
 recursive-include pisces/data *

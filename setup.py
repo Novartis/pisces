@@ -76,10 +76,6 @@ setup(
     license='Apache',
     packages=['pisces'],
     include_package_data=True,
-    data_files=[('sra_tests', [
-        'pisces/sra_tests/SRP093386.sh', 'pisces/sra_tests/contrasts.csv',
-        'pisces/sra_tests/metadata.csv'
-    ])],
     install_requires=install_requires,
     entry_points={'console_scripts': ['pisces = pisces.cli:main']},
     classifiers=[

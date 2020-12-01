@@ -6,7 +6,7 @@ Installing PISCES from git
 
 .. code:: shell
 
-  $ pip install -e git+https://github.com/Novartis/pisces.git@2018.04.01#egg=novartis-pisces
+  $ pip install -e git+https://github.com/Novartis/pisces.git#egg=novartis-pisces
 
 Installing PISCES from PyPI
 ---------------------------
@@ -22,5 +22,5 @@ Testing your PISCES installation
 .. code:: shell
 
 	# run the python module unit tests
-	$ python setup.py test 
+	$ python -m tox
   
