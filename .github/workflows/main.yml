@@ -10,13 +10,24 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     
     strategy:
       matrix:
         python: [3.9]
+        os: [ubuntu-latest, macos-latest]
 
     steps:
+      - if: matrix.os == 'ubuntu-latest'
+        name: Install graphviz - Ubuntu
+        run: |
+            sudo apt-get install graphviz pandoc
+            
+      - if: matrix.os == 'macos-latest'
+        name: Install graphviz - MacOS
+        run: |
+            brew install graphviz pandoc
+
       - name: Checkout
         uses: actions/checkout@v2.3.1 
         with:
