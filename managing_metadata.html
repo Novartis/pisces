@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PISCES metadata file format &#8212; PISCES 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Running" href="running.html" />
+    <link rel="prev" title="Installation instructions" href="install.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="pisces-metadata-file-format">
+<h1>PISCES metadata file format<a class="headerlink" href="#pisces-metadata-file-format" title="Permalink to this headline">¶</a></h1>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Column order does not matter to PISCES, but column names must match the required
+fields exactly.</p>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 32%" />
+<col style="width: 27%" />
+<col style="width: 26%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>SampleID</p></th>
+<th class="head"><p>Directory</p></th>
+<th class="head"><p>Fastq1</p></th>
+<th class="head"><p>Fastq2</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Sample1</p></td>
+<td><p>/path/to/output_dir</p></td>
+<td><p>s1_R1_001.fastq.gz</p></td>
+<td><p>s1_R2_001.fastq.gz</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sample2</p></td>
+<td><p>/path/to/output_dir</p></td>
+<td><p>s2_R1_001.fastq.gz</p></td>
+<td><p>s2_R2_001.fastq.gz</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">SampleID`</span></code> is the unique identifier used to construct output folders, and as an
+identifier in <a class="reference internal" href="running.html#summarize-example"><span class="std std-ref">pisces summarize-expression</span></a> data table column headers. The <code class="docutils literal notranslate"><span class="pre">Directory</span></code> path
+points to the top level directory where PISCES outputs for a sample should be created. This
+may be a relative or absolute path. <code class="docutils literal notranslate"><span class="pre">Fastq1</span></code> is a required field for fragment (single end)
+sequencing libraries, and <code class="docutils literal notranslate"><span class="pre">Fastq2</span></code> is required to analyze paired end libraries. <code class="docutils literal notranslate"><span class="pre">Fastq1</span></code>
+and <code class="docutils literal notranslate"><span class="pre">Fastq2</span></code> paths can specify multiple files using a semicolon (<code class="docutils literal notranslate"><span class="pre">;</span></code>) separator:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 52%" />
+<col style="width: 48%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Fastq1</p></th>
+<th class="head"><p>Fastq2</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>s1_R1_001.fastq.gz;s1_R1_002.fastq.gz</p></td>
+<td><p>s1_R2_001.fastq.gz;s1_R2_002.fastq.gz</p></td>
+</tr>
+<tr class="row-odd"><td><p>s2_R1_001.fastq.gz;s2_R1_002.fastq.gz</p></td>
+<td><p>s2_R2_001.fastq.gz;s2_R2_002.fastq.gz</p></td>
+</tr>
+</tbody>
+</table>
+<p>If NCBI Sequence Read Archive (SRA) accessions are specified, these must be added as <code class="docutils literal notranslate"><span class="pre">SRR</span></code> “run” accessions
+in the <code class="docutils literal notranslate"><span class="pre">SRA</span></code> column. If only SRA experiments are specified, the <code class="docutils literal notranslate"><span class="pre">Fastq1</span></code> column is
+optional.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 27%" />
+<col style="width: 23%" />
+<col style="width: 22%" />
+<col style="width: 14%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>SampleID</p></th>
+<th class="head"><p>Directory</p></th>
+<th class="head"><p>Fastq1</p></th>
+<th class="head"><p>Fastq2</p></th>
+<th class="head"><p>SRA</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Sample1</p></td>
+<td><p>/path/to/output_dir</p></td>
+<td><p>s1_R1_001.fastq.gz</p></td>
+<td><p>s1_R2_001.fastq.gz</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Sample2</p></td>
+<td><p>/path/to/output_dir</p></td>
+<td><p>s2_R1_001.fastq.gz</p></td>
+<td><p>s2_R2_001.fastq.gz</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Sample3</p></td>
+<td><p>/path/to/output_dir</p></td>
+<td></td>
+<td></td>
+<td><p>SRR000001</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sample4</p></td>
+<td><p>/path/to/output_dir</p></td>
+<td></td>
+<td></td>
+<td><p>SRR000002</p></td>
+</tr>
+</tbody>
+</table>
+<p>A metadata table such as this can be constructed using a bash script:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ ls Sample*
+Sample1:
+s1_R1_001.fastq.gz
+s1_R2_001.fastq.gz
+
+Sample2:
+s2_R1_001.fastq.gz
+s2_R2_001.fastq.gz
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="s2">&quot;SampleID,Directory,Fastq1,Fastq2&quot;</span> &gt; metadata.csv
+<span class="k">for</span> dir in Sample*
+  <span class="k">do</span>
+    <span class="nv">fq1</span><span class="o">=</span><span class="k">$(</span>ls <span class="nv">$dir</span>/*_R1_* <span class="p">|</span> tr <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39;;&#39;</span> <span class="p">|</span> sed <span class="s1">&#39;s/;$//&#39;</span><span class="k">)</span>
+    <span class="nv">fq2</span><span class="o">=</span><span class="k">$(</span>ls <span class="nv">$dir</span>/*_R2_* <span class="p">|</span> tr <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39;;&#39;</span> <span class="p">|</span> sed <span class="s1">&#39;s/;$//&#39;</span><span class="k">)</span>
+    <span class="nb">printf</span> <span class="s2">&quot;</span><span class="nv">$dir</span><span class="s2">,</span><span class="nv">$dir</span><span class="s2">/PISCES,</span><span class="nv">$fq1</span><span class="s2">,</span><span class="nv">$fq2</span><span class="s2">\n&quot;</span>
+  <span class="k">done</span> &gt;&gt; metadata.csv
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You may also find it easy to construct the metadata table using a spreadsheet editor.</p>
+</div>
+<div class="section" id="including-analysis-variables-as-metadata">
+<h2>Including analysis variables as metadata<a class="headerlink" href="#including-analysis-variables-as-metadata" title="Permalink to this headline">¶</a></h2>
+<p>PISCES utilizes variables defined in the metadata file when using <a class="reference internal" href="running.html#summarize-example"><span class="std std-ref">pisces summarize-expression</span></a> to
+run differential expression analysis, and for producing normalized fold-change tables. Any
+columns added to the file can be used in downstream analysis.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 15%" />
+<col style="width: 13%" />
+<col style="width: 23%" />
+<col style="width: 19%" />
+<col style="width: 19%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>SampleID</p></th>
+<th class="head"><p>Treatment</p></th>
+<th class="head"><p>Timepoint</p></th>
+<th class="head"><p>Directory</p></th>
+<th class="head"><p>Fastq1</p></th>
+<th class="head"><p>Fastq2</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Sample1</p></td>
+<td><p>DMSO</p></td>
+<td><p>4hours</p></td>
+<td><p>/path/to/output_dir</p></td>
+<td><p>s1_R1_001.fastq.gz</p></td>
+<td><p>s1_R2_001.fastq.gz</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sample2</p></td>
+<td><p>Estrogen</p></td>
+<td><p>12hours</p></td>
+<td><p>/path/to/output_dir</p></td>
+<td><p>s2_R1_001.fastq.gz</p></td>
+<td><p>s2_R2_001.fastq.gz</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>For differential expression analysis in <a class="reference internal" href="running.html#summarize-example"><span class="std std-ref">pisces summarize-expression</span></a> it’s often handy to
+create “replicate group” variables composed of one or more treatment variables, e.g:
+<code class="docutils literal notranslate"><span class="pre">Treatment_Timepoint</span></code>.</p>
+</div>
+</div>
+<div class="section" id="specifying-ncbi-sra-projects">
+<h2>Specifying NCBI SRA projects<a class="headerlink" href="#specifying-ncbi-sra-projects" title="Permalink to this headline">¶</a></h2>
+<p>You can easily create a metadata file for PISCES from the NCBI SRA “runinfo” format.
+For example:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ wget -O - <span class="s1">&#39;http://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?save=efetch&amp;db=sra&amp;rettype=runinfo&amp;term=SRP093386&#39;</span> <span class="p">|</span> <span class="se">\</span>
+  sed -e <span class="s1">&#39;1 s_Run,_SRA,_&#39;</span> -e <span class="s1">&#39;1 s_SampleName,_SampleID,_&#39;</span>  -e <span class="s1">&#39;1 s_Sample,_Directory,_&#39;</span> &gt; metadata.csv
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>SRA,ReleaseDate,LoadDate,spots,bases,spots_with_mates,avgLength,size_MB,AssemblyName,download_path,Experiment,LibraryName,LibraryStrategy,LibrarySelection,LibrarySource,LibraryLayout,InsertSize,InsertDev,Platform,Model,SRAStudy,BioProject,Study_Pubmed_id,ProjectID,Directory,BioSample,SampleType,TaxID,ScientificName,SampleID,g1k_pop_code,source,g1k_analysis_group,Subject_ID,Sex,Disease,Tumor,Affection_Status,Analyte_Type,Histological_Type,Body_Site,CenterName,Submission,dbgap_study_accession,Consent,RunHash,ReadHash
+SRR5024081,2017-06-05 10:28:10,2016-11-15 17:02:50,19429539,2914430850,19429539,150,1118,,https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos2/sra-pub-run-9/SRR5024081/SRR5024081.1,SRX2350772,,RNA-Seq,cDNA,TRANSCRIPTOMIC,PAIRED,0,0,ILLUMINA,Illumina HiSeq 2000,SRP093386,PRJNA353646,2,353646,SRS1800856,SAMN06018691,simple,9606,Homo sapiens,GSM2392582,,,,,,,no,,,,,GEO,SRA494622,,public,3CA090F9CB93F0E2B50ECA6C5F3B51D0,09AF133AC433F56BE0CAA545601CC843
+SRR5024082,2017-06-05 10:28:10,2016-11-15 17:05:18,19357711,2903656650,19357711,150,1121,,https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos2/sra-pub-run-9/SRR5024082/SRR5024082.1,SRX2350773,,RNA-Seq,cDNA,TRANSCRIPTOMIC,PAIRED,0,0,ILLUMINA,Illumina HiSeq 2000,SRP093386,PRJNA353646,2,353646,SRS1800857,SAMN06018690,simple,9606,Homo sapiens,GSM2392583,,,,,,,no,,,,,GEO,SRA494622,,public,16CC07DBC3F955605BBF174F03CE97E6,F0780C1A43CCBDCC8C84920A69AA7AC4
+SRR5024083,2017-06-05 10:28:10,2016-11-15 17:05:35,20295588,3044338200,20295588,150,1166,,https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos2/sra-pub-run-9/SRR5024083/SRR5024083.1,SRX2350774,,RNA-Seq,cDNA,TRANSCRIPTOMIC,PAIRED,0,0,ILLUMINA,Illumina HiSeq 2000,SRP093386,PRJNA353646,2,353646,SRS1800858,SAMN06018689,simple,9606,Homo sapiens,GSM2392584,,,,,,,no,,,,,GEO,SRA494622,,public,94593849B90924BBAA2205455EE74D93,849E78F3439B48BB1DF3D7A0AC357EA6
+SRR5024084,2017-06-05 10:28:10,2016-11-15 17:04:24,21185745,3177861750,21185745,150,1229,,https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos1/sra-pub-run-1/SRR5024084/SRR5024084.1,SRX2350775,,RNA-Seq,cDNA,TRANSCRIPTOMIC,PAIRED,0,0,ILLUMINA,Illumina HiSeq 2000,SRP093386,PRJNA353646,2,353646,SRS1800859,SAMN06018688,simple,9606,Homo sapiens,GSM2392585,,,,,,,no,,,,,GEO,SRA494622,,public,944F48E5B1B2C30FDD695434880FA9A7,2691E7B75072BE574F33D87063D7094D
+SRR5024085,2017-06-05 10:28:10,2016-11-15 17:05:18,19049066,2857359900,19049066,150,1101,,https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos1/sra-pub-run-1/SRR5024085/SRR5024085.1,SRX2350776,,RNA-Seq,cDNA,TRANSCRIPTOMIC,PAIRED,0,0,ILLUMINA,Illumina HiSeq 2000,SRP093386,PRJNA353646,2,353646,SRS1800860,SAMN06018687,simple,9606,Homo sapiens,GSM2392586,,,,,,,no,,,,,GEO,SRA494622,,public,3A908C56681585EF268C7D25F97904BC,C0A3987AACA6AFE3484021BD7EB5582C
+SRR5024086,2017-06-05 10:28:10,2016-11-15 17:04:29,19311258,2896688700,19311258,150,1121,,https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos1/sra-pub-run-1/SRR5024086/SRR5024086.1,SRX2350777,,RNA-Seq,cDNA,TRANSCRIPTOMIC,PAIRED,0,0,ILLUMINA,Illumina HiSeq 2000,SRP093386,PRJNA353646,2,353646,SRS1800861,SAMN06018686,simple,9606,Homo sapiens,GSM2392587,,,,,,,no,,,,,GEO,SRA494622,,public,D574DA5DCD34978C9CDD584271E86FCA,860508A148A28FF63DFF56C2E188F9DC
+SRR5024087,2017-06-05 10:28:10,2016-11-15 17:04:43,19680863,2952129450,19680863,150,1136,,https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos1/sra-pub-run-1/SRR5024087/SRR5024087.1,SRX2350778,,RNA-Seq,cDNA,TRANSCRIPTOMIC,PAIRED,0,0,ILLUMINA,Illumina HiSeq 2000,SRP093386,PRJNA353646,2,353646,SRS1800862,SAMN06018685,simple,9606,Homo sapiens,GSM2392588,,,,,,,no,,,,,GEO,SRA494622,,public,3BC055EDBC9B2B3F6ABC6B40974A5EC3,ABF39F53854C0920B3DFDE038443724D
+...
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Novartis Institutes for Biomedical Research.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/managing_metadata.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

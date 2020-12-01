@@ -1,0 +1,698 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PISCES: a package for rapid quantitation and quality control of large scale mRNA-seq datasets &#8212; PISCES 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Example use cases" href="examples.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="pisces-a-package-for-rapid-quantitation-and-quality-control-of-large-scale-mrna-seq-datasets">
+<h1>PISCES: a package for rapid quantitation and quality control of large scale mRNA-seq datasets<a class="headerlink" href="#pisces-a-package-for-rapid-quantitation-and-quality-control-of-large-scale-mrna-seq-datasets" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="matthew-d-shirley1-viveksagar-k-radhakrishna1-javad-golji1-joshua-m-korn1">
+<h2>Matthew D. Shirley<sup>1</sup>, Viveksagar K. Radhakrishna<sup>1</sup>, Javad Golji<sup>1</sup>, Joshua M. Korn<sup>1</sup><a class="headerlink" href="#matthew-d-shirley1-viveksagar-k-radhakrishna1-javad-golji1-joshua-m-korn1" title="Permalink to this headline">¶</a></h2>
+<p>Novartis Institutes for Biomedical Research<sup>1</sup></p>
+<p>Contact: <a class="reference external" href="mailto:matt_d&#46;shirley&#37;&#52;&#48;novartis&#46;com">matt_d<span>&#46;</span>shirley<span>&#64;</span>novartis<span>&#46;</span>com</a>, <a class="reference external" href="mailto:joshua&#46;korn&#37;&#52;&#48;novartis&#46;com">joshua<span>&#46;</span>korn<span>&#64;</span>novartis<span>&#46;</span>com</a></p>
+<div class="section" id="abstract">
+<h3>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h3>
+<p>PISCES eases processing of large mRNA-seq experiments by encouraging capture of
+metadata using simple textual file formats, processing samples on either a single machine or in parallel
+on a high performance computing cluster (HPC), validating sample identity using
+genetic fingerprinting, and summarizing all outputs in analysis-ready data
+matrices. PISCES consists of two modules: 1) compute cluster-aware
+analysis of individual mRNA-seq libraries including species detection, SNP
+genotyping, library geometry detection, and quantitation using salmon, and 2)
+gene-level transcript aggregation, transcriptional and read-based QC, TMM normalization and differential expression
+analysis of multiple libraries to produce data ready for visualization and
+further analysis.</p>
+<p>PISCES is implemented as a python3 package and is bundled with all necessary
+dependencies to enable reproducible analysis and easy deployment. JSON
+configuration files are used to build and identify transcriptome indices, and
+CSV files are used to supply sample metadata and to define comparison groups for
+differential expression analysis using DEseq2. PISCES builds on many existing
+open-source tools, and releases of PISCES are available on <a class="reference external" href="https://github.com/Novartis/pisces">GitHub</a> or the python
+package index (<a class="reference external" href="https://pypi.org/project/novartis-pisces">PyPI</a>).</p>
+</div>
+<div class="section" id="introduction">
+<h3>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h3>
+<p>Since the first description of RNA-seq <a class="bibtex reference internal" href="#mortazavi2008mapping" id="id1">[1]</a>, methods for
+RNAseq quantification have rapidly increased in sensitivity and decreased in
+required processing time. Recent improvements in speed have been achieved by
+removing the step of full read alignment to a reference
+<a class="bibtex reference internal" href="#patro2017" id="id2">[2]</a><a class="bibtex reference internal" href="#bray2016" id="id3">[3]</a><a class="bibtex reference internal" href="#patro2014" id="id4">[4]</a>. While these “alignment-free” (also known
+as “pseudoalignment,” “quasi-mapping,” or “lightweight alignment”) methods have
+achieved real speed gains, this comes at a loss of compatibility with existing
+RNAseq workflows, including important integrity checks. Alignment-free quality
+control (QC) and sample identification methods for RNAseq libraries are not
+readily available, and existing packages <a class="bibtex reference internal" href="#picard" id="id5">[5]</a> for QC are incompatible
+with the data formats produced by these new quantification methods. Decreased
+sequencing cost have also led to higher throughput of sequencing, with an
+associated desire for faster quantification and turnaround of primary analysis.
+Typical RNAseq experiments may now be composed of hundreds to thousands of
+individual samples, each with descriptive variables for downstream analysis,
+which increases the complexity of data and metadata management. Increased number
+of samples presents more opportunities for sample mixups in the lab. Complex
+designs or cross-experiment meta-analyses further present opportunities for in
+silico label swapping. Tracking of these crucial metadata are usually left to
+the sequencing facility or individual analyst. With no widely agreed upon
+standards for metadata exchange, information about RNAseq libraries may be lost.</p>
+<p>With these types of experiments in mind, we built PISCES with an alignment-free
+human SNP fingerprinting method for checking sample identity, efficient FASTQ
+QC, and novel QC of the transcriptomic and genomic compartments without the need
+for full genomic alignment. PISCES is driven by a well-defined CSV metadata
+format (<code class="xref std std-numref docutils literal notranslate"><span class="pre">sra_table</span></code>), which limits opportunities for label swaps and encourages analysts to
+retain a minimal set of metadata necessary to reproduce an analysis.</p>
+<p>In addition to streamlining primary analysis (transcript and gene
+quantification) at the single sample level, PISCES provides methods for
+executing experiment-level analyses. One common secondary analysis method for
+RNAseq libraries is differential gene expression analysis (DGE). PISCES
+implements DGE using a wrapper for DEseq2 <a class="bibtex reference internal" href="#love2014" id="id6">[6]</a>,
+with contrast groups defined using descriptive variables referenced in the CSV
+metadata file. PISCES creates summarized data matrices of transcript-level
+counts and TPM, as well as gene-level counts, TPM, and log<sub>2</sub>
+fold-change calculated using the median of a user-specified reference group for
+each condition. Trimmed mean of M-values normalization <a class="bibtex reference internal" href="#robinson2010" id="id7">[7]</a> as
+implemented in edgeR is used to adjust TPM abundances of protein coding genes to
+account for differences in RNAseq library transcript composition, e.g. a varying
+amount of non-coding transcripts due to pre-mRNA contamination or incomplete
+rRNA depletion.</p>
+<p>Finally, with increasing numbers of RNAseq libraries comes an increased
+computational burden. PISCES communicates directly with modern compute clusters
+using the distributed resource management application API (DRMAA) to efficiently
+submit and monitor jobs processing individual RNAseq libraries.</p>
+</div>
+<div class="section" id="implementation-of-the-pisces-package">
+<h3>Implementation of the PISCES package<a class="headerlink" href="#implementation-of-the-pisces-package" title="Permalink to this headline">¶</a></h3>
+<p>PISCES is provided as a Python 3 package, including all tools and dependencies,
+which users can easily install
+using common packaging tools such as <code class="docutils literal notranslate"><span class="pre">pip</span></code> on modern Linux and MacOS machines.</p>
+<p>Versioned releases are available from both
+<a class="reference external" href="https://github.com/Novartis/pisces">Github</a> and  <a class="reference external" href="https://pypi.org/project/novartis-pisces">PyPI</a>. Portions of PISCES are implemented
+in the R statistical computing language, and these dependencies, as well as
+other binary dependencies, are also bundled
+and installed automatically using renv <a class="bibtex reference internal" href="#ushey2020" id="id8">[8]</a>. Workflows can be run
+either locally, on a single
+machine, or  on a compute cluster supporting the DRMAA interface. Individual
+RNAseq libraries may be analyzed without associated metadata by passing FASTQ
+files directly into PISCES, or entire experiments may be defined using a
+CSV format metadata file containing, at a minimum: sample names (<em>SampleID</em>),
+FASTQ file locations (<em>Fastq1 and optionally Fastq2</em>) or NCBI SRA run accessions
+(<em>SRA</em>), and output directories for each sample (<em>Directory</em>). The
+metadata file may also contain any descriptive information associated with the
+biological samples such as treatment, batch, or physical sample QC metrics.
+This descriptive information can be used by PISCES to identify sample groupings
+and reference samples for calculating normalized log2 fold changes, and to
+identify groups of samples for generating QC and exploratory figures.
+Differential expression is performed using DEseq2, using contrasts defined in a
+separate CSV format (<code class="xref std std-numref docutils literal notranslate"><span class="pre">contrasts_table</span></code>) that describes covariates of
+interest referenced in the metadata CSV file. Transcriptomic QC metrics are
+calculated from the ratios of unprocessed intronic transcripts, mature processed
+transcripts, and intergenic regions. Several library QC metrics are inferred
+using only kmer counting directly from FASTQ files, including species detection,
+strand detection, and human SNP fingerprint for sample identification.</p>
+<div class="section" id="the-pisces-workflow">
+<h4>The PISCES workflow<a class="headerlink" href="#the-pisces-workflow" title="Permalink to this headline">¶</a></h4>
+<div class="figure align-default" id="id17">
+<span id="workflow-graph"></span> digraph {
+  rankdir=TB;
+  abundance [label=&quot;&lt;f0&gt; TMM(TPM)|&lt;f1&gt; counts|&lt;f2&gt; transcript metrics&quot;, shape=record];
+  de [label=&quot;&lt;f0&gt; log2(fold-change)|&lt;f1&gt; p-value&quot;, shape=record];
+  qc [label=&quot;&lt;f0&gt; nucleotide metrics|&lt;f1&gt; genotype metrics&quot;, shape=record];
+  index [label=&quot;&lt;f0&gt; salmon index|&lt;f1&gt; gene-transcript mapping|&lt;f2&gt; transcript/intron/intergene models&quot;, shape=record];
+  &quot;config.json&quot; -&gt; &quot;pisces index&quot; [arrowhead=none];
+  &quot;metadata.csv&quot; -&gt; &quot;pisces submit&quot; [arrowhead=none];
+  &quot;metadata.csv&quot; -&gt; &quot;pisces summarize-expression&quot; [arrowhead=none];
+  &quot;metadata.csv&quot; -&gt; &quot;pisces summarize-qc&quot; [arrowhead=none];
+  &quot;contrasts.csv&quot; -&gt; &quot;pisces summarize-expression&quot; [arrowhead=none];
+  &quot;pisces submit&quot; -&gt; &quot;pisces summarize-expression&quot;;
+  &quot;pisces submit&quot; -&gt; &quot;pisces summarize-qc&quot;;
+  &quot;pisces summarize-expression&quot; -&gt; abundance;
+  &quot;pisces summarize-expression&quot; -&gt; de;
+  &quot;pisces summarize-qc&quot; -&gt; qc;
+  &quot;pisces index&quot; -&gt; index;
+  index -&gt; &quot;pisces submit&quot;;
+  }<p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">Overview of PISCES workflow, demonstrating configuration file inputs and descriptions of processes and outputs for each PISCES subcommand (index, submit, summarize-expression and summarize-qc).</span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
+</div>
+<p>The PISCES workflow (<a class="reference internal" href="#workflow-graph"><span class="std std-numref">Fig. 1</span></a>) is designed to be <strong>flexible</strong>,
+requiring minimal setup to describe an experiment; <strong>scalable</strong>, running on one to many samples either
+locally or on a compute cluster; <strong>fast</strong>, using alignment-free methods
+to generate QC metrics; and <strong>reproducible</strong>, driven by easily generated
+configuration files and versioned transcriptome annotation, with automated
+generation of transcriptome index files. We demonstrate each step of the PISCES workflow on a real experiment
+(<a class="reference internal" href="#treatment-graph"><span class="std std-numref">Fig. 2</span></a>) and show examples of PISCES outputs on real data.</p>
+</div>
+</div>
+<div class="section" id="results">
+<h3>Results<a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h3>
+<p>As a demonstration of the speed and simplicity of the PISCES workflow we
+reprocess an NCBI SRA study consisting of two breast cancer cell lines, MCF7 and
+T47D, with Y537S or D538G mutations introduced in the ESR1 (estrogen receptor)
+gene and treated with Vehicle or Estrogen (<a class="reference internal" href="#treatment-graph"><span class="std std-numref">Fig. 2</span></a>).</p>
+<div class="figure align-default" id="id18">
+<span id="treatment-graph"></span> digraph {
+  rankdir=LR;
+  compound=true;
+  subgraph clusterbiospecimen {
+    label=&quot;CellLine&quot;;
+    &quot;MCF7&quot;;
+    &quot;T47D&quot;;
+  }
+  subgraph clustergenotype {
+    label=&quot;Genotype&quot;;
+    geno [label=&quot;&lt;f0&gt; Y537S|&lt;f1&gt; D538G|&lt;f2&gt; WT&quot;, shape=record];
+    }
+  subgraph clustertreatment {
+    label=&quot;Treatment&quot;;
+    &quot;Vehicle&quot; [shape=diamond];
+    &quot;Estrogen&quot; [shape=diamond];
+    }
+  &quot;MCF7&quot; -&gt; &quot;geno&quot; [ltail=clusterbiospecimen, lhead=clustergenotype, arrowhead=none];
+  &quot;geno&quot; -&gt; &quot;Vehicle&quot; [ltail=clustergenotype, lhead=clustertreatment, arrowhead=none];
+  &quot;T47D&quot; -&gt; &quot;geno&quot; [ltail=clusterbiospecimen, lhead=clustergenotype, arrowhead=none];
+  &quot;geno&quot; -&gt; &quot;Estrogen&quot; [ltail=clustergenotype, lhead=clustertreatment, arrowhead=none];
+ }<p class="caption"><span class="caption-number">Fig. 2 </span><span class="caption-text">Treatment information for SRP093386</span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="pisces-index-builds-custom-transcriptome-indices">
+<h4><code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">index</span></code> builds custom transcriptome indices<a class="headerlink" href="#pisces-index-builds-custom-transcriptome-indices" title="Permalink to this headline">¶</a></h4>
+<p>PISCES is distributed with configuration for human, mouse, and human/mouse
+chimera transcriptomes (for xenograft experiments) derived from Gencode v32 and
+Gencode vM23 <a class="bibtex reference internal" href="#harrow2006gencode" id="id9">[9]</a>. Custom transcriptomes can easily be defined in a JSON
+configuration file format. Extra sequences (such as bacterial genomes, spike ins for library
+prep, or genetic knock-ins in the experimental design) can be added to
+transcriptomes as arbitrary FASTA formatted files. PISCES builds transcript
+sequences using the GTF file format by first creating all defined transcript
+models per gene, and then concatenating all unique intron sequences to form one
+intronic transcript model per gene. In this way PISCES enables simultaneous
+quantification of both fully processed mRNA and contaminating pre-mRNA
+transcripts. Intergenic regions can also be captured, allowing quantification of
+all transcriptomic compartments of an organism’s genomic assembly. PISCES
+leverages the pufferfish index <a class="bibtex reference internal" href="#almodaresi191874" id="id10">[10]</a> enhancements in salmon
+version 1.0 and above which allows indexing of vastly larger transcript
+sequences.</p>
+</div>
+<div class="section" id="csv-formatted-metadata-files-are-input-for-pisces">
+<h4>CSV formatted metadata files are input for PISCES<a class="headerlink" href="#csv-formatted-metadata-files-are-input-for-pisces" title="Permalink to this headline">¶</a></h4>
+<p>We include a metadata file describing libraries generated from MCF7 cell lines
+in <a class="bibtex reference internal" href="#bahreini2017mutation" id="id11">[11]</a> as a test script, distributed with PISCES. The
+following analysis, reproduced from this test script, serves as an example of a
+typical RNAseq workflow from FASTQ files to differential expression calls. In
+this example, PISCES uses the NCBI SRA toolkit to directly obtain sequencing
+data from NCBI servers, although paths to local data can be substituted in
+<em>Fastq1</em>, and optionally <em>Fastq2</em> columns.</p>
+<table class="docutils align-default" id="sra-table">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Directory</p></th>
+<th class="head"><p>SRA</p></th>
+<th class="head"><p>SampleID</p></th>
+<th class="head"><p>Treatment</p></th>
+<th class="head"><p>Genotype</p></th>
+<th class="head"><p>CellLine</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>SRR5024105</p></td>
+<td><p>SRR5024105</p></td>
+<td><p>GSM2392606</p></td>
+<td><p>Vehicle</p></td>
+<td><p>Wildtype</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-odd"><td><p>SRR5024106</p></td>
+<td><p>SRR5024106</p></td>
+<td><p>GSM2392607</p></td>
+<td><p>Vehicle</p></td>
+<td><p>Wildtype</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-even"><td><p>SRR5024107</p></td>
+<td><p>SRR5024107</p></td>
+<td><p>GSM2392608</p></td>
+<td><p>Vehicle</p></td>
+<td><p>Wildtype</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-odd"><td><p>SRR5024108</p></td>
+<td><p>SRR5024108</p></td>
+<td><p>GSM2392609</p></td>
+<td><p>Vehicle</p></td>
+<td><p>Wildtype</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-even"><td><p>SRR5024109</p></td>
+<td><p>SRR5024109</p></td>
+<td><p>GSM2392610</p></td>
+<td><p>Vehicle</p></td>
+<td><p>Y537S</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-odd"><td><p>SRR5024110</p></td>
+<td><p>SRR5024110</p></td>
+<td><p>GSM2392611</p></td>
+<td><p>Vehicle</p></td>
+<td><p>Y537S</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-even"><td><p>SRR5024111</p></td>
+<td><p>SRR5024111</p></td>
+<td><p>GSM2392612</p></td>
+<td><p>Vehicle</p></td>
+<td><p>Y537S</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-odd"><td><p>SRR5024112</p></td>
+<td><p>SRR5024112</p></td>
+<td><p>GSM2392613</p></td>
+<td><p>Vehicle</p></td>
+<td><p>Y537S</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-even"><td><p>SRR5024113</p></td>
+<td><p>SRR5024113</p></td>
+<td><p>GSM2392614</p></td>
+<td><p>Vehicle</p></td>
+<td><p>D538G</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-odd"><td><p>SRR5024114</p></td>
+<td><p>SRR5024114</p></td>
+<td><p>GSM2392615</p></td>
+<td><p>Vehicle</p></td>
+<td><p>D538G</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-even"><td><p>SRR5024115</p></td>
+<td><p>SRR5024115</p></td>
+<td><p>GSM2392616</p></td>
+<td><p>Vehicle</p></td>
+<td><p>D538G</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-odd"><td><p>SRR5024116</p></td>
+<td><p>SRR5024116</p></td>
+<td><p>GSM2392617</p></td>
+<td><p>Vehicle</p></td>
+<td><p>D538G</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-even"><td><p>SRR5024117</p></td>
+<td><p>SRR5024117</p></td>
+<td><p>GSM2392618</p></td>
+<td><p>Estrogen</p></td>
+<td><p>Wildtype</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-odd"><td><p>SRR5024118</p></td>
+<td><p>SRR5024118</p></td>
+<td><p>GSM2392619</p></td>
+<td><p>Estrogen</p></td>
+<td><p>Wildtype</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-even"><td><p>SRR5024119</p></td>
+<td><p>SRR5024119</p></td>
+<td><p>GSM2392620</p></td>
+<td><p>Estrogen</p></td>
+<td><p>Wildtype</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-odd"><td><p>SRR5024120</p></td>
+<td><p>SRR5024120</p></td>
+<td><p>GSM2392621</p></td>
+<td><p>Estrogen</p></td>
+<td><p>Wildtype</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-even"><td><p>SRR5024121</p></td>
+<td><p>SRR5024121</p></td>
+<td><p>GSM2392622</p></td>
+<td><p>Estrogen</p></td>
+<td><p>Y537S</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-odd"><td><p>SRR5024122</p></td>
+<td><p>SRR5024122</p></td>
+<td><p>GSM2392623</p></td>
+<td><p>Estrogen</p></td>
+<td><p>Y537S</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-even"><td><p>SRR5024123</p></td>
+<td><p>SRR5024123</p></td>
+<td><p>GSM2392624</p></td>
+<td><p>Estrogen</p></td>
+<td><p>Y537S</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-odd"><td><p>SRR5024124</p></td>
+<td><p>SRR5024124</p></td>
+<td><p>GSM2392625</p></td>
+<td><p>Estrogen</p></td>
+<td><p>Y537S</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-even"><td><p>SRR5024125</p></td>
+<td><p>SRR5024125</p></td>
+<td><p>GSM2392626</p></td>
+<td><p>Estrogen</p></td>
+<td><p>D538G</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-odd"><td><p>SRR5024126</p></td>
+<td><p>SRR5024126</p></td>
+<td><p>GSM2392627</p></td>
+<td><p>Estrogen</p></td>
+<td><p>D538G</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-even"><td><p>SRR5024127</p></td>
+<td><p>SRR5024127</p></td>
+<td><p>GSM2392628</p></td>
+<td><p>Estrogen</p></td>
+<td><p>D538G</p></td>
+<td><p>MCF7</p></td>
+</tr>
+<tr class="row-odd"><td><p>SRR5024128</p></td>
+<td><p>SRR5024128</p></td>
+<td><p>GSM2392629</p></td>
+<td><p>Estrogen</p></td>
+<td><p>D538G</p></td>
+<td><p>MCF7</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="xref std std-numref docutils literal notranslate"><span class="pre">sra_table</span></code>: Experimental metadata such as treatment variables and
+covariates of interest (cell line, time point etc.) are described in CSV format.</p>
+<table class="docutils align-default" id="contrasts-table">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Treatment</p></td>
+<td><p>Estrogen</p></td>
+<td><p>Vehicle</p></td>
+</tr>
+<tr class="row-even"><td><p>Genotype</p></td>
+<td><p>Y537S</p></td>
+<td><p>Wildtype</p></td>
+</tr>
+<tr class="row-odd"><td><p>Genotype</p></td>
+<td><p>D538G</p></td>
+<td><p>Wildtype</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="xref std std-numref docutils literal notranslate"><span class="pre">contrasts_table</span></code>: Contrasts for differential expression analysis are
+defined using the variables present in the metadata table. Columns in this file do not have headers, but
+correspond to <code class="docutils literal notranslate"><span class="pre">covariate</span> <span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">experimental</span> <span class="pre">value</span></code>, <code class="docutils literal notranslate"><span class="pre">control</span> <span class="pre">value</span></code>.</p>
+<p>With the above two files, an example PISCES workflow is only a few commands, and
+can be run easily on most Linux and MacOS machines.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pip install novartis-pisces
+$ pisces index
+$ pisces submit -m metadata.csv
+$ pisces summarize-qc -m metadata.csv -f fingerprint.txt
+$ pisces summarize-expression -m metadata.csv -f contrasts.csv -d <span class="s2">&quot;~Treatment + Genotype&quot;</span>
+</pre></div>
+</div>
+<p>A formula for linear modeling of the experiment (<strong>-d</strong>) specifies the
+<strong>Treatment</strong> and <strong>Genotype</strong> covariates, and the interaction between the two,
+and p-values and log2 fold change are computed from the fit for each comparison
+defined in the contrasts CSV. The resulting summarized expression and QC data is
+output to tab separated text files
+suitable for further analysis and visualization using a suitable analytics
+environment such as Jupyter or RStudio.</p>
+</div>
+<div class="section" id="pisces-submit-runs-pisces-on-a-drmaa-enabled-hpc">
+<h4><code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">submit</span></code> runs PISCES on a DRMAA enabled HPC<a class="headerlink" href="#pisces-submit-runs-pisces-on-a-drmaa-enabled-hpc" title="Permalink to this headline">¶</a></h4>
+<p>The PISCES <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">submit</span></code> command simplifies the task of executing the main PISCES
+workflow on a typical compute cluster, meaning a grid compute cluster using SGE,
+UGE, SLURM, Torque, or another DRMAA enabled job scheduler. The <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">submit</span></code>
+command takes an appropriately formatted metadata file similar to <code class="xref std std-numref docutils literal notranslate"><span class="pre">sra_table</span></code> as input and
+dispatches multiple <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">run</span></code> jobs, passing along any extra arguments a user
+supplies, as well as any cluster resource limits such as maximum job runtime,
+maximum memory, and number of CPU cores requested. <cite>pisces submit</cite> then monitors
+job log output and reports job status (number of jobs queued, running,
+finished), enabling a user to quickly process and track a large number of RNAseq
+libraries in parallel.</p>
+</div>
+<div class="section" id="pisces-summarize-qc-aggregates-genetic-qc-metrics">
+<h4><code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">summarize-qc</span></code> aggregates genetic QC metrics<a class="headerlink" href="#pisces-summarize-qc-aggregates-genetic-qc-metrics" title="Permalink to this headline">¶</a></h4>
+<p>Sample quality and identity is paramount for interpretable RNAseq results, but
+is missing from most alignment-free workflows. Here, read sequence quality
+metrics are assessed using fastqp version 0.3.4. For studies involving human
+samples, PISCES uses exact kmer counting (k=21) to generate a VCF per sample
+based on 226 chosen high minor-allele frequency SNPs. Log-odds scores
+representing the likelihood that two samples are genetically identical are used
+to generate a sample identity matrix. To demonstrate PISCES’ ability to match
+genetic identity even across independent experiments, we included breast cancer
+cell lines from the Cancer Cell Line Encyclopedia [12] with our example SRA
+analysis. In (<a class="reference internal" href="#fingerprint"><span class="std std-numref">Fig. 3</span></a>) we show the genetic fingerprints of the
+CCLE <a class="bibtex reference internal" href="#ghandi2019next" id="id12">[12]</a> T47D and MCF7 cell lines match the expected clusters
+from the SRA experiment.  Additionally, one can detect cell line pairs that were
+derived from the same patient (the KPL1 cell line which is a derivative of MCF7,
+and the autologous pair AU565 and SKBR3.)</p>
+<div class="figure align-default" id="fingerprint">
+<img alt="_images/fingerprint_plot.png" src="_images/fingerprint_plot.png" />
+<p class="caption"><span class="caption-number">Fig. 3 </span><span class="caption-text">Sample identity matrix showing two clusters of samples, corresponding to</span><a class="headerlink" href="#fingerprint" title="Permalink to this image">¶</a></p>
+</div>
+<p>libraries derived from MCF7 and T47D cell line models. The p_same score is a
+log-odds value where 0 indicates an exact genetic match and more negative values
+indicate a lower probability of genetic identity. Breast cancer cell lines from
+the publicly available CCLE are shown, demonstrating PISCES ability to integrate
+datasets across experiments.</p>
+</div>
+<div class="section" id="pisces-summarize-expression-aggregates-transcript-and-gene-abundance-estimates">
+<h4><code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">summarize-expression</span></code> aggregates transcript and gene abundance estimates<a class="headerlink" href="#pisces-summarize-expression-aggregates-transcript-and-gene-abundance-estimates" title="Permalink to this headline">¶</a></h4>
+<p>PISCES uses salmon <a class="bibtex reference internal" href="#patro2017" id="id13">[2]</a> for estimating transcript and gene
+abundances from RNAseq libraries.
+Salmon is computationally efficient as well as accurate in assignment of reads
+to transcripts <a class="bibtex reference internal" href="#srivastava2020alignment" id="id14">[13]</a>. PISCES includes Salmon version
+1.3.0. Library
+type parameters (strand-specific, read pairs, and read pair orientation) are
+inferred from input FASTQ files. Salmon is run with default parameters as well
+as specifying
+<code class="docutils literal notranslate"><span class="pre">--seqBias</span></code>, <code class="docutils literal notranslate"><span class="pre">--gcBias</span></code>, and <code class="docutils literal notranslate"><span class="pre">--useVBOpt</span></code>. The <code class="docutils literal notranslate"><span class="pre">pisces</span>
+<span class="pre">summarize-expression</span></code> subcommand
+aggregates transcriptomic counts and TPM estimates for multiple samples and
+summarizes these
+values to gene-level data matrices with appropriate column names defined in the
+metadata CSV file.
+TMM normalization is applied to the TPM estimates to control for highly
+expressed outlier transcripts.
+If unprocessed transcript models are specified during <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">index</span></code>, data
+matrices for
+“intronic” and “intergene” transcriptomic compartments are output and a summary
+of percent coding, intergenic and
+intronic sequence estimates can be used to determine relative sample QC
+thresholds <a class="reference internal" href="#qc-plots-1"><span class="std std-numref">Fig. 4</span></a>.</p>
+<div class="figure align-default" id="qc-plots-1">
+<img alt="_images/qc_plot.png" src="_images/qc_plot.png" />
+<p class="caption"><span class="caption-number">Fig. 4 </span><span class="caption-text">Percent coding, intronic, and intergenic read content is calculated salmon counts of processed transcript models,
+transcript models of introns, and intergenic sequences.</span><a class="headerlink" href="#qc-plots-1" title="Permalink to this image">¶</a></p>
+</div>
+<p>If contrasts (<code class="xref std std-numref docutils literal notranslate"><span class="pre">contrasts_table</span></code>) and a formula are specified, differential gene expression is calculated and output
+to a tidy data table. These in turn can be visualized using standard graphing techniques, for example as a volcano plot <a class="reference internal" href="#volcano-plot"><span class="std std-numref">Fig. 5</span></a>.</p>
+<div class="figure align-default" id="volcano-plot">
+<img alt="_images/volcano_plot.png" src="_images/volcano_plot.png" />
+<p class="caption"><span class="caption-number">Fig. 5 </span><span class="caption-text">Volcano plot of differentially expressed genes (DEGs) identified by DESeq2, with <strong>p &lt; 0.01</strong>.
+DEGs previously identified from <a class="bibtex reference internal" href="#bahreini2017mutation" id="id15">[11]</a> shown with the fold change stated in
+the original publication.</span><a class="headerlink" href="#volcano-plot" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="pisces-genomic-indexing-and-repeat-masking">
+<h4><code class="docutils literal notranslate"><span class="pre">pisces</span></code> genomic indexing and repeat masking<a class="headerlink" href="#pisces-genomic-indexing-and-repeat-masking" title="Permalink to this headline">¶</a></h4>
+<p>During development of PISCES it became clear that the expression of certain
+genes was detected under biologically improbable contexts (such as aberrant immune
+cell marker gene expression in non-immune cancer cell culture). Upon closer
+inspection it appeared that many of these genes with unexpectedly high
+expression were mapping reads to repetitive regions of the transcript sequence.
+These repetitive regions are masked by RepeatMasker in the UCSC repeat masked genome assemblies,
+and so by default the pisces index command will hard-mask any soft-masked
+characters in the input genome assembly. The effect of repeat masking on salmon
+TPM estimates is that many genes with apparently low-to-medium abundance are
+significantly reduced, indicating their TPM estimates were driven primarily by
+repeat sequences and were likely a result of incorrectly assigned reads
+(<a class="reference internal" href="#repeatmask-plot"><span class="std std-numref">Fig. 6</span></a>).</p>
+<div class="figure align-default" id="repeatmask-plot">
+<img alt="_images/repeatmask_plot.png" src="_images/repeatmask_plot.png" />
+<p class="caption"><span class="caption-number">Fig. 6 </span><span class="caption-text">Median estimated read counts per gene for MCF7 models (<code class="xref std std-numref docutils literal notranslate"><span class="pre">sra_table</span></code>) for either
+exon-centric transcript models (x-axis) or exon-centric transcript models with repeat-masking (y-axis) demonstrates
+inflation (right shifted bins) of gene counts in the exon-centric data. Median counts were
+binned in quarter-log increments with a pseudo-count added to every observation to avoid
+undefined values.</span><a class="headerlink" href="#repeatmask-plot" title="Permalink to this image">¶</a></p>
+</div>
+<p>Another way to visualize the effect of repeat masking is to examine its impact on differential
+gene expression results. In <a class="reference internal" href="#de-plot-nomask"><span class="std std-numref">Fig. 7</span></a> this effect is demonstrated between  exon-centric
+transcriptome indices with and without repeat masking. Off-axis genes contain reads that
+are potentially mis-mapped due to repetitive sequence content. Copies of these repetitive sequences
+may be found throughout the genome assembly, and without repeat masking, reads that map
+well to these sequences may be incorrectly assigned.</p>
+<div class="figure align-default" id="de-plot-nomask">
+<img alt="_images/de_plot_nomask.png" src="_images/de_plot_nomask.png" />
+<p class="caption"><span class="caption-number">Fig. 7 </span><span class="caption-text">Differentially expressed genes identified in D538G or Y537S vs. Wild-type MCF7 models (<code class="xref std std-numref docutils literal notranslate"><span class="pre">sra_table</span></code>)
+for either exon-centric transcript models (x-axis) or exon-centric transcript models with repeat-masking (y-axis). Off-axis
+genes indicate potential mis-mapped reads due to repetitive sequence. DEGs with p &lt; 0.01 are shown. Genes
+with a greater than 2 fold difference between methods are labeled. Points are colored by the ratio of median gene counts
+for exon-centric vs exon-centric repeat-masked methods.</span><a class="headerlink" href="#de-plot-nomask" title="Permalink to this image">¶</a></p>
+</div>
+<p>Surprisingly, we can achieve almost exactly the same effect as repeat-masking by simply including
+intronic and intergenic sequences to build a genome-centric transcript index for salmon.
+This may be due to missing transcripts in our transcriptome model that contain
+repeats; by including these repeats in our intronic and intergenic sequences
+they are no longer assigned to the transcript that did have these repeats. LINE and SINE repeats
+are commonly expressed in several cancer types <a class="bibtex reference internal" href="#burns2017transposable" id="id16">[14]</a>, and transcript
+models that contain these transposable elements, especially in 5’ and 3’ untranslated regions (UTRs)
+could be susceptible to such read mis-mapping. <a class="reference internal" href="#de-plot"><span class="std std-numref">Fig. 8</span></a> shows that changes to differentially expressed genes are
+minimal between the repeat-masked exon-centric indexing method and the
+genome-centric transcriptome indexing method. By compartmentalizing the entire
+genome assembly we may reduce the number of spurious mappings arising from
+repetitive genomic sequences.</p>
+<div class="figure align-default" id="de-plot">
+<img alt="_images/de_plot.png" src="_images/de_plot.png" />
+<p class="caption"><span class="caption-number">Fig. 8 </span><span class="caption-text">Differentially expressed genes identified in D538G or Y537S vs. Wild-type MCF7 models (<code class="xref std std-numref docutils literal notranslate"><span class="pre">sra_table</span></code>)
+for either exon-centric transcript models with repeat-masking (x-axis) or genome-centric transcript models (y-axis). Off-axis
+genes indicate potential mis-mapped reads due to repetitive sequence. DEGs with p &lt; 0.01 are shown. Genes
+with a greater than 2 fold difference between exon-centric (repeat-masked) and genome-centric methods are labeled. Points are colored by the ratio of median gene counts
+for exon-centric repeat-masked vs genome-centric methods.</span><a class="headerlink" href="#de-plot" title="Permalink to this image">¶</a></p>
+</div>
+<p>Based on these results we recommend the use of a genome-centric transcriptome index in PISCES.</p>
+</div>
+</div>
+<div class="section" id="discussion">
+<h3>Discussion<a class="headerlink" href="#discussion" title="Permalink to this headline">¶</a></h3>
+<p>The motivation for development of PISCES is to enable the efficient, reproducible, and
+automated analysis of the majority of RNAseq experiments. To this end, the main
+design goals were ease of installation and use, built-in
+cluster submission to enable rapid job processing, clarity and reproducibility
+through use of configuration files, and a design that encourages
+users to describe experiments using metadata files that can be leveraged at
+multiple steps in the PISCES workflow. In this way users are encouraged toward
+reproducible description of their RNAseq analysis.</p>
+<p>Traditional alignment-based RNAseq pipelines trade longer run times for more
+detailed alignment of each sequence read. The gains in computing efficiency
+acheived by pseudoalignment based transcript quantification come at the cost of
+this detailed alignment information. This required adaptation of existing RNAseq
+QC methods that rely on alignment, to keep the total run time of the PISCES
+pipeline close to the run time of its’ slowest individual component.
+Integration of external datasets (e.g. TCGA, GTEx, or SRA projects) can be
+complicated by varying quality control from different sites, data transfer
+concerns due to disparate (local and remote) data sources, and limitations due
+to compute times necessary to run traditional tools. PISCES enables large scale
+integration of datasets, processing of high throughput RNAseq generated from
+large plate format screens, fast quantification against multiple custom
+transcriptomes, and fast, reliable reprocessing of libraries whenever new
+transcriptome annotation or genome assemblies become available.</p>
+<p>In addition to gains in computational efficiency, PISCES enables rapid analysis
+of routine RNAseq experiments, through automated modeling of differential gene
+expression and generation of clean tables for visualizing gene expression,
+sample clustering, genetic identity, and QC metrics. We demonstrate a novel genome-centric
+transcriptome indexing strategy that allows integrated transcript QC measures of intronic
+and intergenic sequences while also avoiding read mismapping that may occur with exon-centric transcriptome
+quantification. PISCES is available on <a class="reference external" href="https://github.com/Novartis/pisces">GitHub</a> at
+<a class="reference external" href="https://github.com/Novartis/pisces">https://github.com/Novartis/pisces</a>, and on the python package index (<a class="reference external" href="https://pypi.org/project/novartis-pisces">PyPI</a>) at <a class="reference external" href="https://pypi.org/project/novartis-pisces">https://pypi.org/project/novartis-pisces</a>.</p>
+<p id="bibtex-bibliography-manuscript-0"><dl class="citation">
+<dt class="bibtex label" id="mortazavi2008mapping"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Ali Mortazavi, Brian A Williams, Kenneth McCue, Lorian Schaeffer, and Barbara Wold. Mapping and quantifying mammalian transcriptomes by rna-seq. <em>Nature methods</em>, 5(7):621, 2008.</p>
+</dd>
+<dt class="bibtex label" id="patro2017"><span class="brackets">2</span><span class="fn-backref">(<a href="#id2">1</a>,<a href="#id13">2</a>)</span></dt>
+<dd><p>Rob Patro, Geet Duggal, Michael I Love, Rafael A Irizarry, and Carl Kingsford. Salmon provides fast and bias-aware quantification of transcript expression. <em>Nature Methods</em>, 14(4):417–419, 2017.</p>
+</dd>
+<dt class="bibtex label" id="bray2016"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
+<dd><p>NL Bray, H Pimentel, P Melsted, and L Pachter. Near-optimal probabilistic rna-seq quantification. <em>Nature biotechnology</em>, 34(5):525, 2016.</p>
+</dd>
+<dt class="bibtex label" id="patro2014"><span class="brackets"><a class="fn-backref" href="#id4">4</a></span></dt>
+<dd><p>Rob Patro, Stephen M Mount, and Carl Kingsford. Sailfish enables alignment-free isoform quantification from rna-seq reads using lightweight algorithms. <em>Nature biotechnology</em>, 32(5):462–464, 2014.</p>
+</dd>
+<dt class="bibtex label" id="picard"><span class="brackets"><a class="fn-backref" href="#id5">5</a></span></dt>
+<dd><p>Picard tools website at github. <span><a class="reference external" href="#"></a></span>http://broadinstitute.github.io/picard. Accessed: 2017-10-02.</p>
+</dd>
+<dt class="bibtex label" id="love2014"><span class="brackets"><a class="fn-backref" href="#id6">6</a></span></dt>
+<dd><p>Michael I Love, Wolfgang Huber, and Simon Anders. Moderated estimation of fold change and dispersion for rna-seq data with deseq2. <em>Genome biology</em>, 15(12):550, 2014.</p>
+</dd>
+<dt class="bibtex label" id="robinson2010"><span class="brackets"><a class="fn-backref" href="#id7">7</a></span></dt>
+<dd><p>Mark D Robinson and Alicia Oshlack. A scaling normalization method for differential expression analysis of rna-seq data. <em>Genome biology</em>, 11(3):R25, 2010.</p>
+</dd>
+<dt class="bibtex label" id="ushey2020"><span class="brackets"><a class="fn-backref" href="#id8">8</a></span></dt>
+<dd><p>Kevin Ushey. <em>Project Environments</em>. 2020 (accessed August 10, 2020). URL: <a class="reference external" href="https://cloud.r-project.org/package=renv">https://cloud.r-project.org/package=renv</a>.</p>
+</dd>
+<dt class="bibtex label" id="harrow2006gencode"><span class="brackets"><a class="fn-backref" href="#id9">9</a></span></dt>
+<dd><p>Jennifer Harrow, France Denoeud, Adam Frankish, Alexandre Reymond, Chao-Kung Chen, Jacqueline Chrast, Julien Lagarde, James GR Gilbert, Roy Storey, David Swarbreck, and others. Gencode: producing a reference annotation for encode. <em>Genome biology</em>, 7(1):1–9, 2006.</p>
+</dd>
+<dt class="bibtex label" id="almodaresi191874"><span class="brackets"><a class="fn-backref" href="#id10">10</a></span></dt>
+<dd><p>Fatemeh Almodaresi, Hirak Sarkar, and Rob Patro. A space and time-efficient index for the compacted colored de bruijn graph. <em>bioRxiv</em>, 2017. URL: <a class="reference external" href="https://www.biorxiv.org/content/early/2017/09/21/191874">https://www.biorxiv.org/content/early/2017/09/21/191874</a>, <a class="reference external" href="https://arxiv.org/abs/https://www.biorxiv.org/content/early/2017/09/21/191874.full.pdf">arXiv:https://www.biorxiv.org/content/early/2017/09/21/191874.full.pdf</a>, <a class="reference external" href="https://doi.org/10.1101/191874">doi:10.1101/191874</a>.</p>
+</dd>
+<dt class="bibtex label" id="bahreini2017mutation"><span class="brackets">11</span><span class="fn-backref">(<a href="#id11">1</a>,<a href="#id15">2</a>)</span></dt>
+<dd><p>Amir Bahreini, Zheqi Li, Peilu Wang, Kevin M Levine, Nilgun Tasdemir, Lan Cao, Hazel M Weir, Shannon L Puhalla, Nancy E Davidson, Andrew M Stern, and others. Mutation site and context dependent effects of esr1 mutation in genome-edited breast cancer cell models. <em>Breast Cancer Research</em>, 19(1):60, 2017.</p>
+</dd>
+<dt class="bibtex label" id="ghandi2019next"><span class="brackets"><a class="fn-backref" href="#id12">12</a></span></dt>
+<dd><p>Mahmoud Ghandi, Franklin W Huang, Judit Jané-Valbuena, Gregory V Kryukov, Christopher C Lo, E Robert McDonald, Jordi Barretina, Ellen T Gelfand, Craig M Bielski, Haoxin Li, and others. Next-generation characterization of the cancer cell line encyclopedia. <em>Nature</em>, 569(7757):503–508, 2019.</p>
+</dd>
+<dt class="bibtex label" id="srivastava2020alignment"><span class="brackets"><a class="fn-backref" href="#id14">13</a></span></dt>
+<dd><p>Avi Srivastava, Laraib Malik, Hirak Sarkar, Mohsen Zakeri, Fatemeh Almodaresi, Charlotte Soneson, Michael I Love, Carl Kingsford, and Rob Patro. Alignment and mapping methodology influence transcript abundance estimation. <em>Genome biology</em>, 21(1):1–29, 2020.</p>
+</dd>
+<dt class="bibtex label" id="burns2017transposable"><span class="brackets"><a class="fn-backref" href="#id16">14</a></span></dt>
+<dd><p>Kathleen H Burns. Transposable elements in cancer. <em>Nature Reviews Cancer</em>, 17(7):415–424, 2017.</p>
+</dd>
+</dl>
+</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Novartis Institutes for Biomedical Research.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/manuscript.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PISCES Documentation &#8212; PISCES 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation instructions" href="install.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="pisces-documentation">
+<h1>PISCES Documentation<a class="headerlink" href="#pisces-documentation" title="Permalink to this headline">¶</a></h1>
+<p>PISCES is a pipeline for rapid transcript quantitation, genetic fingerprinting,
+and quality control assessment of RNAseq libraries
+using <a class="reference external" href="http://github.com/COMBINE-lab/salmon">Salmon</a>.</p>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation instructions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#installing-pisces-from-git">Installing PISCES from git</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#installing-pisces-from-pypi">Installing PISCES from PyPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#testing-your-pisces-installation">Testing your PISCES installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="managing_metadata.html">PISCES metadata file format</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="managing_metadata.html#including-analysis-variables-as-metadata">Including analysis variables as metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="managing_metadata.html#specifying-ncbi-sra-projects">Specifying NCBI SRA projects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="running.html">Running</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="running.html#pisces-index">pisces index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running.html#pisces-run">pisces run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running.html#pisces-submit">pisces submit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running.html#pisces-summarize-expression">pisces summarize-expression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running.html#pisces-summarize-qc">pisces summarize-qc</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Example use cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manuscript.html">PISCES: a package for rapid quantitation and quality control of large scale mRNA-seq datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="manuscript.html#matthew-d-shirley1-viveksagar-k-radhakrishna1-javad-golji1-joshua-m-korn1">Matthew D. Shirley<sup>1</sup>, Viveksagar K. Radhakrishna<sup>1</sup>, Javad Golji<sup>1</sup>, Joshua M. Korn<sup>1</sup></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="quickstart">
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>Install the python module (see <a class="reference internal" href="install.html"><span class="doc">Installation instructions</span></a>)</p></li>
+<li><p>Create transcriptome and genome index files (see <a class="reference internal" href="running.html#index-example"><span class="std std-ref">pisces index</span></a>)</p></li>
+<li><p>Create a CSV file to define your experiment (see <a class="reference internal" href="managing_metadata.html"><span class="doc">PISCES metadata file format</span></a>)</p></li>
+<li><p>Submit your jobs to a DRMAA aware high performance computing cluster (see <a class="reference internal" href="running.html#submit-example"><span class="std std-ref">pisces submit</span></a>)</p></li>
+<li><p>Summarize gene/transcript expression and QC metrics in analysis-ready tables using <a class="reference internal" href="running.html#summarize-example"><span class="std std-ref">pisces summarize-expression</span></a> and <a class="reference internal" href="running.html#qc-example"><span class="std std-ref">pisces summarize-qc</span></a>.</p></li>
+</ul>
+<div class="figure align-default">
+<img alt="_images/pisces.png" src="_images/pisces.png" />
+</div>
+</div>
+<div class="section" id="publication">
+<h1>Publication<a class="headerlink" href="#publication" title="Permalink to this headline">¶</a></h1>
+<p>The manuscript is under preparation and the latest version can be viewed
+here: <a class="reference internal" href="manuscript.html"><span class="doc">PISCES: a package for rapid quantitation and quality control of large scale mRNA-seq datasets</span></a>.</p>
+</div>
+<div class="section" id="development">
+<h1>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
+<p>Pull requests and issues are welcomed on the pisces <a class="reference external" href="http://github.com/Novartis/pisces">Github repository</a>.</p>
+</div>
+
+
+          </div>
+          
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Novartis Institutes for Biomedical Research.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

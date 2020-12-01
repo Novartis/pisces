@@ -1,0 +1,381 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Running &#8212; PISCES 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Example use cases" href="examples.html" />
+    <link rel="prev" title="PISCES metadata file format" href="managing_metadata.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="running">
+<h1>Running<a class="headerlink" href="#running" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="pisces-index">
+<span id="index-example"></span><h2>pisces index<a class="headerlink" href="#pisces-index" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pisces index
+</pre></div>
+</div>
+<p>Builds the default PISCES <a class="reference internal" href="config.html"><span class="doc">configuration file format</span></a>.
+This will build salmon index files for human, mouse, and human-mouse sample types.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If index output folders exist, they will not be overwritten, as PISCES assumes the index has already been built.</p>
+</div>
+<p>You can also pass in a custom <code class="docutils literal notranslate"><span class="pre">--config</span></code> file:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pisces --config config.json index
+</pre></div>
+</div>
+</div>
+<div class="section" id="pisces-run">
+<span id="run-example"></span><h2>pisces run<a class="headerlink" href="#pisces-run" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Most users will want to use <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">submit</span></code> to process an entire experiment on either a local machine or an
+HPC cluster. Please see <a class="reference internal" href="#submit-example">submit_example</a> for usage.</p>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pisces run -fq1 lane1_R1_001.fastq.gz lane1_R1_002.fastq.gz <span class="se">\</span>
+             -fq2 lane1_R2_001.fastq.gz lane1_R2_002.fastq.gz
+</pre></div>
+</div>
+<p>In the most basic form, you can specify only the fastq files (as a list
+of forward and reverse reads) and other parameters will be auto-detected
+or selected from default values. Either paired or unpaired libraries are
+allowed. If the data are unpaired, just pass fastq files using <code class="docutils literal notranslate"><span class="pre">-fq1</span></code>.</p>
+<p>Data and program paths are defined using a default
+<a class="reference internal" href="config.html"><span class="doc">configuration file format</span></a> which can be specified at runtime using the
+<code class="docutils literal notranslate"><span class="pre">--config</span></code> argument.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pisces --config config.json run <span class="se">\</span>
+         -fq1 lane1_R1_001.fastq.gz lane1_R1_002.fastq.gz <span class="se">\</span>
+         -fq2 lane1_R2_001.fastq.gz lane1_R2_002.fastq.gz
+</pre></div>
+</div>
+<p>Sample name (<code class="docutils literal notranslate"><span class="pre">-n,</span> <span class="pre">--name</span></code>), output directory (<code class="docutils literal notranslate"><span class="pre">-o,</span> <span class="pre">--out</span></code>) and total
+number of CPU threads to utilize (<code class="docutils literal notranslate"><span class="pre">-p,</span> <span class="pre">--threads</span></code>) may be specified
+explicitly, or default to automatic values.</p>
+</div>
+<div class="section" id="pisces-submit">
+<span id="submit-example"></span><h2>pisces submit<a class="headerlink" href="#pisces-submit" title="Permalink to this headline">¶</a></h2>
+<p>PISCES contains a command for running multiple <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">run</span></code> jobs on a DRMAA-aware
+compute cluster (sge, uge, slurm). Jobs are specified using the <code class="docutils literal notranslate"><span class="pre">metadata.csv</span></code> table
+by adding data locations for the FASTQ files. Extra arguments to <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">run</span></code> are passed to
+<code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">submit</span></code> and appended to each job before submission to the cluster. The DRMMA library
+needs to be accessible in your environment: <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">DRMAA_LIBRARY_PATH=/path/to/libdrmaa.so</span></code>.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pisces submit --metadata metadata.csv <span class="o">[</span>pisces run args<span class="o">]</span>
+</pre></div>
+</div>
+<p>After job submission, <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">submit</span></code> will monitor the progress of submitted
+jobs. If you want to exit this command, pressing <code class="docutils literal notranslate"><span class="pre">Ctrl+C</span></code> will prompt whether
+to delete the current jobs. Job progress (running, completion, or failure) can
+be checked at any time by re-running <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">submit</span></code> in the directory where
+<code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">submit</span></code> was originally run. If you need to later re-run <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">submit</span></code> in
+the same directory you must first delete the <code class="docutils literal notranslate"><span class="pre">.pisces</span></code> directory.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ pisces submit --help
+usage: pisces submit [-h] [--metadata METADATA] [--workdir WORKDIR] [--local]
+                     [--batch] [--runtime RUNTIME]
+                     [--max-memory {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127}]
+                     [--dry-run]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --metadata METADATA, -m METADATA
+                        metadata.csv file containing (at minimum) SampleID,
+                        Fastq1, Fastq2, Directory columns
+  --workdir WORKDIR, -w WORKDIR
+                        directory where PISCES will create the .pisces folder
+                        to contain jobs scripts, logs, and run information
+  --local               run jobs on the local machine
+  --batch               after submitting jobs using DRMAA, exit without
+                        monitoring job status
+  --runtime RUNTIME, -rt RUNTIME
+                        runtime in seconds for each cluster job
+  --max-memory {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127}, -mm {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127}
+                        memory in GB required per job
+  --dry-run, -n         print job commands and then exit
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pisces run -fq1 lane1_R1_001.fastq.gz lane1_R1_002.fastq.gz <span class="se">\</span>
+             -fq2 lane1_R2_001.fastq.gz lane1_R2_002.fastq.gz <span class="se">\</span>
+             -p <span class="m">12</span> <span class="se">\</span>
+             -o PISCES_output_sample1
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ pisces run --help
+usage: pisces run [-h] (-fq1 [FQ1 ...] | -sra [SRA ...]) [-fq2 [FQ2 ...]]
+                  [-n NAME] [-o OUT] [-p THREADS] [-t SAMPLE_TYPE]
+                  [-i [SALMON_INDICES ...]] [-s [SALMON_ARGS ...]]
+                  [-l {IU,ISF,ISR}] [--scratch-dir SCRATCH_DIR] [--overwrite]
+                  [--make-bam] [--no-salmon] [--no-fastqp] [--no-vcf]
+                  [--sra-enc-dir SRA_ENC_DIR]
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+required arguments:
+  -fq1 [FQ1 ...]        space-separated list of gzipped FASTQ read 1 files
+  -sra [SRA ...]        NCBI sequence read archive accessions in the form
+                        SRR#######
+
+optional arguments:
+  -fq2 [FQ2 ...]        space-separated list of gzipped FASTQ read 2 files
+  -n NAME, --name NAME  sample name used in output files. default=auto
+  -o OUT, --out OUT     path to output directory. default=/path/to/$FQ1/PISCES
+  -p THREADS, --threads THREADS
+                        total number of CPU threads to use default=2
+  -t SAMPLE_TYPE, --sample-type SAMPLE_TYPE
+                        type of the library (defined in --config file)
+                        default=auto, choices: dict_keys([&#39;human&#39;, &#39;mouse&#39;,
+                        &#39;human-mouse&#39;])
+  -i [SALMON_INDICES ...], --salmon-indices [SALMON_INDICES ...]
+                        salmon indices to use (defined in --config file)
+                        defaults={&#39;human&#39;: &#39;gencode_basic&#39;, &#39;mouse&#39;:
+                        &#39;gencode_basic&#39;, &#39;human-mouse&#39;: &#39;gencode_basic&#39;}
+  -s [SALMON_ARGS ...], --salmon-args [SALMON_ARGS ...]
+                        extra arguments to pass to salmon (default=None)
+  -l {IU,ISF,ISR}, --libtype {IU,ISF,ISR}
+                        library geometry for Salmon (http://salmon.readthedocs
+                        .org/en/latest/salmon.html#what-s-this-libtype)
+                        default=auto
+  --scratch-dir SCRATCH_DIR
+                        path to scratch directory default=&#39;$(--out)&#39;
+  --overwrite           overwrite existing files default=False
+  --make-bam            make a BAM file for visualization
+  --no-salmon           do not run salmon
+  --no-fastqp           do not generate read-level qc metrics
+  --no-vcf              do not generate vcf file
+  --sra-enc-dir SRA_ENC_DIR
+                        path to NCBI SRA project directory for encrypted dbGaP
+                        data
+</pre></div>
+</div>
+</div>
+<div class="section" id="pisces-summarize-expression">
+<span id="summarize-example"></span><h2>pisces summarize-expression<a class="headerlink" href="#pisces-summarize-expression" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pisces summarize-expression Sample1/PISCES Sample2/PISCES Sample3/PISCES ...
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pisces summarize-expression -m metadata.csv
+</pre></div>
+</div>
+<p>You can summarize transcript-level expression to gene-level and make TPM
+and counts matrices using <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">summarize-expression</span></code>. Required arguments are
+the directories specified as <code class="docutils literal notranslate"><span class="pre">--out</span></code> from <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">run</span></code>. Optionally
+you can supply a metadata matrix in CSV format similar to <a class="reference external" href="data/metadata_example.csv">this
+example</a>:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 34%" />
+<col style="width: 34%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>SampleID</p></th>
+<th class="head"><p>Treatment</p></th>
+<th class="head"><p>Timepoint</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Sample1</p></td>
+<td><p>DMSO</p></td>
+<td><p>1h</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sample2</p></td>
+<td><p>DMSO</p></td>
+<td><p>1h</p></td>
+</tr>
+<tr class="row-even"><td><p>Sample3</p></td>
+<td><p>DMSO</p></td>
+<td><p>1h</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sample4</p></td>
+<td><p>Dox</p></td>
+<td><p>1h</p></td>
+</tr>
+<tr class="row-even"><td><p>Sample5</p></td>
+<td><p>Dox</p></td>
+<td><p>1h</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sample6</p></td>
+<td><p>Dox</p></td>
+<td><p>1h</p></td>
+</tr>
+<tr class="row-even"><td><p>Sample7</p></td>
+<td><p>DMSO</p></td>
+<td><p>4h</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sample8</p></td>
+<td><p>DMSO</p></td>
+<td><p>4h</p></td>
+</tr>
+<tr class="row-even"><td><p>Sample9</p></td>
+<td><p>DMSO</p></td>
+<td><p>4h</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sample10</p></td>
+<td><p>Dox</p></td>
+<td><p>4h</p></td>
+</tr>
+<tr class="row-even"><td><p>Sample11</p></td>
+<td><p>Dox</p></td>
+<td><p>4h</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sample12</p></td>
+<td><p>Dox</p></td>
+<td><p>4h</p></td>
+</tr>
+</tbody>
+</table>
+<p>When supplying a <code class="docutils literal notranslate"><span class="pre">--metadata</span></code> file you can specify the <code class="docutils literal notranslate"><span class="pre">--group-by</span></code>
+option to group samples (e.g. Timepoint) before normalizing using the
+<code class="docutils literal notranslate"><span class="pre">--norm-by</span></code> variable (e.g. Treatment) with the <code class="docutils literal notranslate"><span class="pre">--control-factor</span></code>
+(e.g. DMSO) as the set of control samples to normalize to. You can also
+pass a formula for differential expression using DESeq2 by specifying
+<code class="docutils literal notranslate"><span class="pre">--deseq-formula</span></code> such as
+<code class="docutils literal notranslate"><span class="pre">--deseq-formula</span> <span class="pre">&quot;~</span> <span class="pre">Treatment</span> <span class="pre">+</span> <span class="pre">Treatment:Timepoint&quot;</span></code>. The
+<code class="docutils literal notranslate"><span class="pre">--spotfire-template</span></code> option copies a template Spotfire file useful
+for visualizing the resulting data matrices.</p>
+<p>By default <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">summarize-expression</span></code> matches metadata to input sample
+directories based on the order of directories passed as positional
+arguments. E.g:
+<code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">summarize-expression</span> <span class="pre">-m</span> <span class="pre">metadata.csv</span> <span class="pre">/Sample1</span> <span class="pre">/Sample2</span> <span class="pre">...</span></code>. Sometimes
+this is cumbersome, so there are two options for encoding input
+locations in the metadata file:</p>
+<p>As paths to <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">run</span></code> output directories:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 26%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>SampleID</p></th>
+<th class="head"><p>Treatment</p></th>
+<th class="head"><p>Directory</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Sample1</p></td>
+<td><p>DMSO</p></td>
+<td><p>/path/to/PISCES_run1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sample2</p></td>
+<td><p>DMSO</p></td>
+<td><p>/path/to/PISCES_run2</p></td>
+</tr>
+</tbody>
+</table>
+<p>As paths to salmon “quant.sf” files:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 22%" />
+<col style="width: 58%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>SampleID</p></th>
+<th class="head"><p>Treatment</p></th>
+<th class="head"><p>QuantFilePath</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Sample1</p></td>
+<td><p>DMSO</p></td>
+<td><p>/path/to/PISCES_run1/quant.sf</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sample2</p></td>
+<td><p>DMSO</p></td>
+<td><p>/path/to/PISCES_run2/quant.sf</p></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ pisces summarize-expression
+Error in loadNamespace(name) : there is no package called ‘renv’
+Calls: :: ... loadNamespace -&gt; withRestarts -&gt; withOneRestart -&gt; doWithOneRestart
+Execution halted
+</pre></div>
+</div>
+</div>
+<div class="section" id="pisces-summarize-qc">
+<span id="qc-example"></span><h2>pisces summarize-qc<a class="headerlink" href="#pisces-summarize-qc" title="Permalink to this headline">¶</a></h2>
+<p>QC tables are created using the <code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">summarize-qc</span></code> command. PISCES samples
+are discovered recursively for each directory passed to the tool.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pisces summarize-qc . <span class="se">\</span>
+            --spotfire-template QC.dxp <span class="se">\</span>
+            --tab QC.table.txt <span class="se">\</span>
+            --tall QC.skinny.txt <span class="se">\</span>
+            --fingerprint fingerprint_identities.txt
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pisces summarize-qc --metadata metadata.csv <span class="se">\</span>
+            --spotfire-template QC.dxp <span class="se">\</span>
+            --tab QC.table.txt <span class="se">\</span>
+            --tall QC.skinny.txt <span class="se">\</span>
+            --fingerprint fingerprint_identities.txt
+</pre></div>
+</div>
+<p>Note that directories are searched recursively and so it is sufficient
+to pass in the top level directory when all PISCES runs in the directory
+are desired.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ pisces summarize-qc
+
+12-01 15:53 INFO     Searching for directories.
+
+0.00File [00:00, ?File/s]
+                         
+12-01 15:53 INFO     Found 0 samples.
+
+12-01 15:53 INFO     Finished.
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Novartis Institutes for Biomedical Research.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/running.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

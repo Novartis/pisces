@@ -1,5 +1,0 @@
-include pisces/R/*.R
-recursive-include pisces/scripts *
-include pisces/config.json
-recursive-include pisces/data *
-include README.md
