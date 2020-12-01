@@ -1,4 +1,4 @@
-[!https://img.shields.io/pypi/v/novartis-pisces.svg?branch=master](https://pypi.python.org/pypi/novartis-pisces)
+![https://img.shields.io/pypi/v/novartis-pisces.svg?branch=master](https://pypi.python.org/pypi/novartis-pisces)
 
 # PISCES: a package for quantitation and QC of large scale mRNA-seq datasets
 
