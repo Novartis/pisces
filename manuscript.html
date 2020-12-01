@@ -138,7 +138,7 @@ strand detection, and human SNP fingerprint for sample identification.</p>
 <div class="section" id="the-pisces-workflow">
 <h4>The PISCES workflow<a class="headerlink" href="#the-pisces-workflow" title="Permalink to this headline">¶</a></h4>
 <div class="figure align-default" id="id17">
-<span id="workflow-graph"></span> digraph {
+<span id="workflow-graph"></span><div class="graphviz"><img src="_images/graphviz-d263336b1a6bea9aaa000f44220e66c6fb7b3923.png" alt="digraph {
   rankdir=TB;
   abundance [label=&quot;&lt;f0&gt; TMM(TPM)|&lt;f1&gt; counts|&lt;f2&gt; transcript metrics&quot;, shape=record];
   de [label=&quot;&lt;f0&gt; log2(fold-change)|&lt;f1&gt; p-value&quot;, shape=record];
@@ -156,7 +156,8 @@ strand detection, and human SNP fingerprint for sample identification.</p>
   &quot;pisces summarize-qc&quot; -&gt; qc;
   &quot;pisces index&quot; -&gt; index;
   index -&gt; &quot;pisces submit&quot;;
-  }<p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">Overview of PISCES workflow, demonstrating configuration file inputs and descriptions of processes and outputs for each PISCES subcommand (index, submit, summarize-expression and summarize-qc).</span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
+  }" class="graphviz" /></div>
+<p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">Overview of PISCES workflow, demonstrating configuration file inputs and descriptions of processes and outputs for each PISCES subcommand (index, submit, summarize-expression and summarize-qc).</span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
 </div>
 <p>The PISCES workflow (<a class="reference internal" href="#workflow-graph"><span class="std std-numref">Fig. 1</span></a>) is designed to be <strong>flexible</strong>,
 requiring minimal setup to describe an experiment; <strong>scalable</strong>, running on one to many samples either
@@ -174,7 +175,7 @@ reprocess an NCBI SRA study consisting of two breast cancer cell lines, MCF7 and
 T47D, with Y537S or D538G mutations introduced in the ESR1 (estrogen receptor)
 gene and treated with Vehicle or Estrogen (<a class="reference internal" href="#treatment-graph"><span class="std std-numref">Fig. 2</span></a>).</p>
 <div class="figure align-default" id="id18">
-<span id="treatment-graph"></span> digraph {
+<span id="treatment-graph"></span><div class="graphviz"><img src="_images/graphviz-634a5d7b2e1acc50fa73789ee9b8f3c419537569.png" alt="digraph {
   rankdir=LR;
   compound=true;
   subgraph clusterbiospecimen {
@@ -195,7 +196,8 @@ gene and treated with Vehicle or Estrogen (<a class="reference internal" href="#
   &quot;geno&quot; -&gt; &quot;Vehicle&quot; [ltail=clustergenotype, lhead=clustertreatment, arrowhead=none];
   &quot;T47D&quot; -&gt; &quot;geno&quot; [ltail=clusterbiospecimen, lhead=clustergenotype, arrowhead=none];
   &quot;geno&quot; -&gt; &quot;Estrogen&quot; [ltail=clustergenotype, lhead=clustertreatment, arrowhead=none];
- }<p class="caption"><span class="caption-number">Fig. 2 </span><span class="caption-text">Treatment information for SRP093386</span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
+ }" class="graphviz" /></div>
+<p class="caption"><span class="caption-number">Fig. 2 </span><span class="caption-text">Treatment information for SRP093386</span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
 </div>
 <div class="section" id="pisces-index-builds-custom-transcriptome-indices">
 <h4><code class="docutils literal notranslate"><span class="pre">pisces</span> <span class="pre">index</span></code> builds custom transcriptome indices<a class="headerlink" href="#pisces-index-builds-custom-transcriptome-indices" title="Permalink to this headline">¶</a></h4>
