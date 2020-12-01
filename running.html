@@ -104,7 +104,7 @@ optional arguments:
   -n NAME, --name NAME  sample name used in output files. default=auto
   -o OUT, --out OUT     path to output directory. default=/path/to/$FQ1/PISCES
   -p THREADS, --threads THREADS
-                        total number of CPU threads to use default=2
+                        total number of CPU threads to use default=4
   -t SAMPLE_TYPE, --sample-type SAMPLE_TYPE
                         type of the library (defined in --config file)
                         default=auto, choices: dict_keys([&#39;human&#39;, &#39;mouse&#39;,
@@ -314,8 +314,14 @@ locations in the metadata file:</p>
 </tbody>
 </table>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ pisces summarize-expression
-Error in loadNamespace(name) : there is no package called ‘renv’
-Calls: :: ... loadNamespace -&gt; withRestarts -&gt; withOneRestart -&gt; doWithOneRestart
+Warning message:
+package ‘tximport’ was built under R version 3.6.3 
+Using directories as sample names.
+Using samples:
+integer(0)logical(0)
+Error in tximport(salmon.files, type = &quot;salmon&quot;, txOut = TRUE, importer = read_fn) : 
+  length(files) &gt; 0 is not TRUE
+Calls: tximport -&gt; stopifnot
 Execution halted
 </pre></div>
 </div>
@@ -344,13 +350,13 @@ to pass in the top level directory when all PISCES runs in the directory
 are desired.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ pisces summarize-qc
 
-12-01 16:58 INFO     Searching for directories.
+12-01 17:07 INFO     Searching for directories.
 
 0.00File [00:00, ?File/s]
                          
-12-01 16:58 INFO     Found 0 samples.
+12-01 17:07 INFO     Found 0 samples.
 
-12-01 16:58 INFO     Finished.
+12-01 17:07 INFO     Finished.
 </pre></div>
 </div>
 </div>
