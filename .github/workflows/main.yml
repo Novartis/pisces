@@ -39,7 +39,7 @@ jobs:
           python-version: ${{ matrix.python }}
           
       - name: Setup R
-        uses: r-lib/actions/setup-r@v1
+        uses: r-lib/actions/setup-r@master
         with:
             r-version: '3.6.2'
             
