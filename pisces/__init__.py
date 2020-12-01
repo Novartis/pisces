@@ -248,9 +248,7 @@ def format_salmon_command(libtype, threads, index, output_dir, read1, read2,
         cmd.extend(
             shlex.split(
                 "--writeMappings | {0} view -Sb - | {0} sort -T {1} -o -  > {2}".
-                format(
-                    os.path.join(data_dir, "redist", "samtools-1.3.1",
-                                 "samtools"),
+                format("samtools",
                     os.path.join(output_dir, "sort.tmp"),
                     os.path.join(output_dir, "mapped.bam"))))
     logging.debug("Salmon command line: " + ' '.join(cmd))
