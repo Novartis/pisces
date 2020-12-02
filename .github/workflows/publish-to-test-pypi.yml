@@ -21,7 +21,7 @@ jobs:
         run: pip install tox
     
       - name: Tox
-        run: tox -e pypi
+        run: tox -e package
             
       - name: Publish to test PyPI
         uses: pypa/gh-action-pypi-publish@master
