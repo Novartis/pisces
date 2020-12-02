@@ -68,7 +68,7 @@ setup(
     packages=['pisces'],
     include_package_data=True,
     install_requires=install_requires,
-    use_scm_version=True,
+    use_scm_version={"local_scheme": "no-local-version"},
     setup_requires=['setuptools_scm'],
     entry_points={'console_scripts': ['pisces = pisces.cli:main']},
     classifiers=[
