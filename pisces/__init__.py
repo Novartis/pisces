@@ -17,8 +17,6 @@ from multiprocessing import Process
 from tempfile import NamedTemporaryFile, mkdtemp
 from functools import partial
 
-__version__ = '0.1.1'
-
 unique_id = ''.join(random.choice(string.digits) for _ in range(10))    
 
 
