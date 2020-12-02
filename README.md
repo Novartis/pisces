@@ -1,7 +1,7 @@
-[![PyPI](https://img.shields.io/pypi/v/novartis-pisces.svg?branch=master)](https://pypi.python.org/pypi/novartis-pisces)
 [![CI](https://github.com/Novartis/pisces/workflows/CI/badge.svg)](https://github.com/Novartis/pisces/actions?query=workflow%3ACI)
 [![Sphinx Docs](https://github.com/Novartis/pisces/workflows/Sphinx%20Docs/badge.svg)](https://opensource.nibr.com/pisces/)
 [![Package Builds](https://github.com/Novartis/pisces/workflows/Package%20Builds/badge.svg)](https://github.com/Novartis/pisces/actions?query=workflow%3A%22Package+Builds%22)
+[![PyPI](https://badge.fury.io/py/novartis-pisces.svg)](https://pypi.python.org/pypi/novartis-pisces)
 
 # PISCES: a package for quantitation and QC of large scale mRNA-seq datasets
 
