@@ -1,4 +1,4 @@
-name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
+name: Publish to PyPI and TestPyPI
 on: push
 
 jobs:
@@ -32,7 +32,6 @@ jobs:
             python -m
             build
             --sdist
-            --wheel
             --outdir dist/
             .
             
