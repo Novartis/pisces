@@ -53,36 +53,29 @@ def install_binary_dependencies():
         with tarfile.open(fileobj=tar_file) as tar:
             tar.extractall(path=os.path.join(redist, "salmon"))
 
-def get_version(string):
-    """ Parse the version number variable __version__ from a script. """
-    import re
-    version_re = r"^__version__ = ['\"]([^'\"]*)['\"]"
-    version_str = re.search(version_re, string, re.M).group(1)
-    return version_str
-
-
 setup(
     cmdclass={
         'develop': PostDevelopCommand,
         'install': PostInstallCommand,
     },
     name='novartis-pisces',
-    version=get_version(open('pisces/__init__.py').read()),
     author='Matthew Shirley',
     author_email='matt_d.shirley@novartis.com',
-    url='https://github.com/novartis/pisces',
+    url='https://github.com/Novartis/pisces',
     description=
     'PISCES: pipeline for rapid transcript quantitation, genetic fingerprinting, and quality control assessment of RNAseq libraries',
     license='Apache',
     packages=['pisces'],
     include_package_data=True,
     install_requires=install_requires,
+    use_scm_version=True,
+    setup_requires=['setuptools_scm'],
     entry_points={'console_scripts': ['pisces = pisces.cli:main']},
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: Apache Software License",
         "Environment :: Console", "Intended Audience :: Science/Research",
         "Natural Language :: English", "Operating System :: Unix",
-        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.9",
         "Topic :: Scientific/Engineering :: Bio-Informatics"
     ])
