@@ -76,8 +76,27 @@ using <a class="reference external" href="http://github.com/COMBINE-lab/salmon">
 <li><p>Submit your jobs to a DRMAA aware high performance computing cluster (see <a class="reference internal" href="running.html#submit-example"><span class="std std-ref">pisces submit</span></a>)</p></li>
 <li><p>Summarize gene/transcript expression and QC metrics in analysis-ready tables using <a class="reference internal" href="running.html#summarize-example"><span class="std std-ref">pisces summarize-expression</span></a> and <a class="reference internal" href="running.html#qc-example"><span class="std std-ref">pisces summarize-qc</span></a>.</p></li>
 </ul>
-<div class="figure align-default">
-<img alt="_images/pisces.png" src="_images/pisces.png" />
+<div class="figure align-default" id="id1">
+<div class="graphviz"><img src="_images/graphviz-0986a4b910249e46b66897320a67ecb2b80fe2ed.png" alt="digraph {
+  rankdir=TB;
+  abundance [label=&quot;&lt;f0&gt; TMM(TPM)|&lt;f1&gt; counts|&lt;f2&gt; transcript metrics&quot;, shape=record];
+  de [label=&quot;&lt;f0&gt; log2(fold-change)|&lt;f1&gt; p-value&quot;, shape=record];
+  qc [label=&quot;&lt;f0&gt; nucleotide metrics|&lt;f1&gt; genotype metrics&quot;, shape=record];
+  index [label=&quot;&lt;f0&gt; salmon index|&lt;f1&gt; gene-transcript mapping|&lt;f2&gt; transcript/intron/intergene models&quot;, shape=record];
+  &quot;config.json&quot; -&gt; &quot;pisces index&quot; [arrowhead=none];
+  &quot;metadata.csv&quot; -&gt; &quot;pisces submit&quot; [arrowhead=none];
+  &quot;metadata.csv&quot; -&gt; &quot;pisces summarize-expression&quot; [arrowhead=none];
+  &quot;metadata.csv&quot; -&gt; &quot;pisces summarize-qc&quot; [arrowhead=none];
+  &quot;contrasts.csv&quot; -&gt; &quot;pisces summarize-expression&quot; [arrowhead=none];
+  &quot;pisces submit&quot; -&gt; &quot;pisces summarize-expression&quot;;
+  &quot;pisces submit&quot; -&gt; &quot;pisces summarize-qc&quot;;
+  &quot;pisces summarize-expression&quot; -&gt; abundance;
+  &quot;pisces summarize-expression&quot; -&gt; de;
+  &quot;pisces summarize-qc&quot; -&gt; qc;
+  &quot;pisces index&quot; -&gt; index;
+  index -&gt; &quot;pisces submit&quot;;
+  }" class="graphviz" /></div>
+<p class="caption"><span class="caption-number">Fig. 9 </span><span class="caption-text">Overview of PISCES workflow, demonstrating configuration file inputs and descriptions of processes and outputs for each PISCES subcommand (index, submit, summarize-expression and summarize-qc).</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="publication">

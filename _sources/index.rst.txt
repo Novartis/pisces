@@ -26,7 +26,28 @@ Quickstart
 - Submit your jobs to a DRMAA aware high performance computing cluster (see :ref:`submit_example`)
 - Summarize gene/transcript expression and QC metrics in analysis-ready tables using :ref:`summarize_example` and :ref:`qc_example`.
 
-.. figure:: figures/pisces.png
+.. graphviz::
+  :caption: Overview of PISCES workflow, demonstrating configuration file inputs and descriptions of processes and outputs for each PISCES subcommand (index, submit, summarize-expression and summarize-qc).
+
+   digraph {
+    rankdir=TB;
+    abundance [label="<f0> TMM(TPM)|<f1> counts|<f2> transcript metrics", shape=record];
+    de [label="<f0> log2(fold-change)|<f1> p-value", shape=record];
+    qc [label="<f0> nucleotide metrics|<f1> genotype metrics", shape=record];
+    index [label="<f0> salmon index|<f1> gene-transcript mapping|<f2> transcript/intron/intergene models", shape=record];
+    "config.json" -> "pisces index" [arrowhead=none];
+    "metadata.csv" -> "pisces submit" [arrowhead=none];
+    "metadata.csv" -> "pisces summarize-expression" [arrowhead=none];
+    "metadata.csv" -> "pisces summarize-qc" [arrowhead=none];
+    "contrasts.csv" -> "pisces summarize-expression" [arrowhead=none];
+    "pisces submit" -> "pisces summarize-expression";
+    "pisces submit" -> "pisces summarize-qc";
+    "pisces summarize-expression" -> abundance;
+    "pisces summarize-expression" -> de;
+    "pisces summarize-qc" -> qc;
+    "pisces index" -> index;
+    index -> "pisces submit";
+    }
 
 Publication
 ===========
