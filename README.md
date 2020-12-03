@@ -7,4 +7,6 @@
 
 PISCES is a pipeline for rapid transcript quantitation, genetic fingerprinting, and quality control assessment of RNAseq libraries using Salmon.
 
-See the current documentation at https://opensource.nibr.com/pisces/. Read the manuscript at https://opensource.nibr.com/pisces/manuscript.html, or on BioRxiv (soon).
+See the current documentation at https://opensource.nibr.com/pisces/. Read the manuscript at https://www.biorxiv.org/content/10.1101/2020.12.01.390575v1.
+
+
