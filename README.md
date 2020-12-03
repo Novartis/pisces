@@ -10,3 +10,26 @@ PISCES is a pipeline for rapid transcript quantitation, genetic fingerprinting, 
 See the current documentation at https://opensource.nibr.com/pisces/. Read the manuscript at https://www.biorxiv.org/content/10.1101/2020.12.01.390575v1.
 
 Matthew D Shirley, Viveksagar K Radhakrishna, Javad Golji, Joshua M Korn. (Preprint) PISCES: a package for rapid quantitation and quality control of large scale mRNA-seq datasets. bioRxiv. 2020.
+
+## Quickstart
+
+Installation:
+```
+$ pip install --user novartis-pisces
+$ pisces dependencies
+```
+
+Submitting jobs to an HPC cluster:
+```
+$ pisces submit -m metadata.csv
+```
+
+Summarizing QC metrics and gene expression:
+```
+$ pisces summarize-qc -m metadata.csv -f fingerprint.txt
+$ pisces summarize-expression -m metadata.csv
+# optionally specify contrasts and formula for DESeq2 differential gene expression
+$ pisces summarize-expression -m metadata.csv -f contrasts.csv -d "~covariate1 + covartiate2"
+```
+
+Please submit bugs or questions to our issue tracker.
