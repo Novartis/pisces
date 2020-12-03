@@ -52,8 +52,9 @@ Quickstart
 Publication
 ===========
 
-The manuscript is under preparation and the latest version can be viewed
-here: :doc:`manuscript`.
+The manuscript is available on `bioRxiv <https://www.biorxiv.org/content/10.1101/2020.12.01.390575v1>`__ and the latest version can be viewed in this documentation: :doc:`manuscript`.
+
+Matthew D Shirley, Viveksagar K Radhakrishna, Javad Golji, Joshua M Korn. `PISCES: a package for rapid quantitation and quality control of large scale mRNA-seq datasets <https://www.biorxiv.org/content/10.1101/2020.12.01.390575v1>`__. bioRxiv. 2020.
 
 Development
 ===========
