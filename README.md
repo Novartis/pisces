@@ -9,4 +9,4 @@ PISCES is a pipeline for rapid transcript quantitation, genetic fingerprinting, 
 
 See the current documentation at https://opensource.nibr.com/pisces/. Read the manuscript at https://www.biorxiv.org/content/10.1101/2020.12.01.390575v1.
 
-
+Matthew D Shirley, Viveksagar K Radhakrishna, Javad Golji, Joshua M Korn. (Preprint) PISCES: a package for rapid quantitation and quality control of large scale mRNA-seq datasets. bioRxiv. 2020.
