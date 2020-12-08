@@ -10,12 +10,8 @@ getScriptPath <- function() {
 }
 script.dir <- getScriptPath()
 setwd(script.dir)
-message("installing renv")
-utils::install.packages("renv", repos='http://cran.us.r-project.org', quiet = TRUE)
-message("installing BiocManager")
-utils::install.packages("BiocManager", repos='http://cran.us.r-project.org', quiet = TRUE)
 renv::settings$use.cache(FALSE, persist = TRUE)
 renv::consent(provided = TRUE)
-renv::activate()
+renv::install("BiocManager")
 renv::hydrate(packages=renv::dependencies()$Package)
 renv::snapshot()
