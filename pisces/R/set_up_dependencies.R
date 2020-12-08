@@ -10,7 +10,7 @@ getScriptPath <- function() {
 }
 script.dir <- getScriptPath()
 setwd(script.dir)
-install.packages("renv",  repos='http://cran.us.r-project.org') }
+install.packages("renv",  repos='http://cran.us.r-project.org')
 renv::settings$use.cache(FALSE, persist = TRUE)
 renv::consent(provided = TRUE)
 renv::activate()
