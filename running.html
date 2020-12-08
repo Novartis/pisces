@@ -87,9 +87,9 @@ explicitly, or default to automatic values.</p>
 usage: pisces run [-h] (-fq1 [FQ1 ...] | -sra [SRA ...]) [-fq2 [FQ2 ...]]
                   [-n NAME] [-o OUT] [-p THREADS] [-t SAMPLE_TYPE]
                   [-i [SALMON_INDICES ...]] [-s [SALMON_ARGS ...]]
-                  [-l {IU,ISF,ISR}] [--scratch-dir SCRATCH_DIR] [--overwrite]
-                  [--make-bam] [--no-salmon] [--no-fastqp] [--no-vcf]
-                  [--sra-enc-dir SRA_ENC_DIR]
+                  [-l {IU,ISF,ISR,A}] [--scratch-dir SCRATCH_DIR]
+                  [--overwrite] [--make-bam] [--no-salmon] [--no-fastqp]
+                  [--no-vcf] [--sra-enc-dir SRA_ENC_DIR]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -115,7 +115,7 @@ optional arguments:
                         &#39;gencode_basic&#39;, &#39;human-mouse&#39;: &#39;gencode_basic&#39;}
   -s [SALMON_ARGS ...], --salmon-args [SALMON_ARGS ...]
                         extra arguments to pass to salmon (default=None)
-  -l {IU,ISF,ISR}, --libtype {IU,ISF,ISR}
+  -l {IU,ISF,ISR,A}, --libtype {IU,ISF,ISR,A}
                         library geometry for Salmon (http://salmon.readthedocs
                         .org/en/latest/salmon.html#what-s-this-libtype)
                         default=auto
@@ -344,13 +344,13 @@ to pass in the top level directory when all PISCES runs in the directory
 are desired.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ pisces summarize-qc
 
-12-08 15:25 INFO     Searching for directories.
+12-08 20:10 INFO     Searching for directories.
 
 0.00File [00:00, ?File/s]
                          
-12-08 15:25 INFO     Found 0 samples.
+12-08 20:10 INFO     Found 0 samples.
 
-12-08 15:25 INFO     Finished.
+12-08 20:10 INFO     Finished.
 </pre></div>
 </div>
 </div>
