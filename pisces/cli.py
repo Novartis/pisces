@@ -209,7 +209,7 @@ def create_parser(args=None):
         '-l',
         '--libtype',
         type=str,
-        choices=('IU', 'ISF', 'ISR'),
+        choices=('IU', 'ISF', 'ISR', 'A'),
         help=
         "library geometry for Salmon (http://salmon.readthedocs.org/en/latest/salmon.html#what-s-this-libtype) default=auto"
     )
