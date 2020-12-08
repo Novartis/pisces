@@ -30,9 +30,6 @@ jobs:
             
       - name: Install python packages
         run: pip install tox
-    
-      - name: Install R dependencies
-        run: pisces dependencies
         
       - name: Tox
         run: tox -e docs
