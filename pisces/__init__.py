@@ -16,13 +16,9 @@ from subprocess import Popen, PIPE
 from multiprocessing import Process
 from tempfile import NamedTemporaryFile, mkdtemp
 from functools import partial
-from pkg_resources import get_distribution, DistributionNotFound
+from pkg_resources import get_distribution
 
-try:
-    __version__ = get_distribution(__name__).version
-except DistributionNotFound:
-     # package is not installed
-    pass
+__version__ = get_distribution(__name__).version
 
 unique_id = ''.join(random.choice(string.digits) for _ in range(10))    
 
