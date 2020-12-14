@@ -78,7 +78,6 @@ def read_level_qc(fastq, output_dir, sample_name):
         'nreads': 2000000,
         'base_probs': '0.25,0.25,0.25,0.25,0.1',
         'kmer': 5,
-        'type': 'fastq',
         'leftlimit': 1,
         'rightlimit': -1,
         'median-qual': 30,

@@ -112,6 +112,8 @@ def run(args, unknown_args):
     except RuntimeError:
         if not args.sample_type or not args.libtype:
             logging.error("Genotyping failed: please specify --sample-type and --libtype parameters manually.")
+            logging.error("Running salmon with --libtype A")
+            libtype = 'A'
 
     if args.libtype:
         libtype = args.libtype
