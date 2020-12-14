@@ -9,6 +9,7 @@ import stat
 import pickle
 import pandas as pd
 import time
+from pkg_resources import get_distribution
 
 __version__ = get_distribution("novartis_pisces").version
 

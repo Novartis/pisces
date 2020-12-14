@@ -21,6 +21,7 @@ from subprocess import Popen, PIPE, call
 from collections import OrderedDict, defaultdict
 from tqdm import tqdm
 from pisces import find_data_directory
+from pkg_resources import get_distribution
 
 __version__ = get_distribution("novartis_pisces").version
 

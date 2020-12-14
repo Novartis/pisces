@@ -6,6 +6,7 @@ import socket
 from multiprocessing import Process
 from pisces import find_data_directory, long_substr
 from itertools import chain
+from pkg_resources import get_distribution
 
 __version__ = get_distribution("novartis_pisces").version
 

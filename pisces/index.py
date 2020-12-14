@@ -1,6 +1,7 @@
 import logging
 import os
 from pisces import find_data_directory
+from pkg_resources import get_distribution
 
 __version__ = get_distribution("novartis_pisces").version
 
