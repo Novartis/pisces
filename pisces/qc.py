@@ -3,7 +3,7 @@ from collections import OrderedDict, defaultdict
 from pisces import find_data_directory
 from subprocess import Popen, PIPE, call
 
-__version__ = get_distribution("pisces").version
+__version__ = get_distribution("novartis_pisces").version
 
 data_dir = find_data_directory()
 

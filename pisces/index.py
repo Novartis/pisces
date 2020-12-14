@@ -2,7 +2,7 @@ import logging
 import os
 from pisces import find_data_directory
 
-__version__ = get_distribution("pisces").version
+__version__ = get_distribution("novartis_pisces").version
 
 def build_index(args, unknown_args):
     from pyfaidx import Fasta

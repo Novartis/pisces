@@ -22,7 +22,7 @@ from collections import OrderedDict, defaultdict
 from tqdm import tqdm
 from pisces import find_data_directory
 
-__version__ = get_distribution("pisces").version
+__version__ = get_distribution("novartis_pisces").version
 
 data_dir = find_data_directory()
 

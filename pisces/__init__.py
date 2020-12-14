@@ -18,7 +18,7 @@ from tempfile import NamedTemporaryFile, mkdtemp
 from functools import partial
 from pkg_resources import get_distribution
 
-__version__ = get_distribution(__name__).version
+__version__ = get_distribution("novartis_pisces").version
 
 unique_id = ''.join(random.choice(string.digits) for _ in range(10))    
 
