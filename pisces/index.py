@@ -1,6 +1,8 @@
 import logging
 import os
-from pisces import __version__, find_data_directory
+from pisces import find_data_directory
+
+__version__ = get_distribution("pisces").version
 
 def build_index(args, unknown_args):
     from pyfaidx import Fasta

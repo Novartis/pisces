@@ -20,7 +20,9 @@ from multiprocessing import Process, cpu_count
 from subprocess import Popen, PIPE, call
 from collections import OrderedDict, defaultdict
 from tqdm import tqdm
-from pisces import __version__, find_data_directory
+from pisces import find_data_directory
+
+__version__ = get_distribution("pisces").version
 
 data_dir = find_data_directory()
 

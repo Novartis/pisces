@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from pisces import __version__
 from signal import signal, SIGINT, SIGTERM
 from subprocess import Popen, PIPE, call
 from tqdm import tqdm
@@ -10,6 +9,8 @@ import stat
 import pickle
 import pandas as pd
 import time
+
+__version__ = get_distribution("pisces").version
 
 def _submit_drmaa(args, unknown_args):
     """ Submit multiple 'pisces run' jobs to the cluster using libdrmaa """

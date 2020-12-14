@@ -4,8 +4,10 @@ import pisces
 import time
 import socket
 from multiprocessing import Process
-from pisces import __version__, find_data_directory, long_substr
+from pisces import find_data_directory, long_substr
 from itertools import chain
+
+__version__ = get_distribution("pisces").version
 
 data_dir = find_data_directory()
 

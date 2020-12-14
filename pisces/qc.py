@@ -1,7 +1,9 @@
 from pisces import __version__
 from collections import OrderedDict, defaultdict
-from pisces import __version__, find_data_directory
+from pisces import find_data_directory
 from subprocess import Popen, PIPE, call
+
+__version__ = get_distribution("pisces").version
 
 data_dir = find_data_directory()
 
