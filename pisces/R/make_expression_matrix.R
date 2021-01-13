@@ -172,6 +172,13 @@ Summarize <- function(txi, tx2gene, annotation, args, metadata, species) {
         as.data.frame() %>%
         format(nsmall = 3, scientific = F, trim = T) %>%
         write.table(paste0(args[["--name"]], ".", species, ".isoforms.counts.txt"), quote = FALSE, sep = "\t", row.names = F, col.names = T)
+        
+    as.data.frame(txi$length[tx.idx,]) %>% 
+        tibble::rownames_to_column("transcript_id") %>% 
+        left_join(tx2gene) %>%
+        as.data.frame() %>%
+        format(nsmall = 3, scientific = F, trim = T) %>%
+        write.table(paste0(args[["--name"]], ".", species, ".isoforms.length.txt"), quote = FALSE, sep = "\t", row.names = F, col.names = T)
     
     message("Writing intron level tables...")
     as.data.frame(txi$abundance[intron.idx,]) %>% 
@@ -187,6 +194,12 @@ Summarize <- function(txi, tx2gene, annotation, args, metadata, species) {
         format(nsmall = 3, scientific = F, trim = T) %>%
         write.table(paste0(args[["--name"]], ".", species, ".introns.counts.txt"), quote = FALSE, sep = "\t", row.names = F, col.names = T)
         
+    as.data.frame(txi$length[intron.idx,]) %>% 
+        tibble::rownames_to_column("gene_id") %>% 
+        as.data.frame() %>%
+        format(nsmall = 3, scientific = F, trim = T) %>%
+        write.table(paste0(args[["--name"]], ".", species, ".introns.length.txt"), quote = FALSE, sep = "\t", row.names = F, col.names = T)
+        
     message("Writing intergene level tables...")
     as.data.frame(txi$abundance[intergene.idx,]) %>% 
         rescaleTPM() %>%
@@ -200,6 +213,12 @@ Summarize <- function(txi, tx2gene, annotation, args, metadata, species) {
         as.data.frame() %>%
         format(nsmall = 3, scientific = F, trim = T) %>%
         write.table(paste0(args[["--name"]], ".", species, ".intergenes.counts.txt"), quote = FALSE, sep = "\t", row.names = F, col.names = T)
+        
+    as.data.frame(txi$length[intergene.idx,]) %>% 
+        tibble::rownames_to_column("gene_id") %>% 
+        as.data.frame() %>%
+        format(nsmall = 3, scientific = F, trim = T) %>%
+        write.table(paste0(args[["--name"]], ".", species, ".intergenes.length.txt"), quote = FALSE, sep = "\t", row.names = F, col.names = T)
         
     message("Building transcript QC measure table...")
     pct_intronic <- colSums(txi$counts[intron.idx,]) / colSums(txi$counts[c(tx.idx, intron.idx, intergene.idx),]) * 100
@@ -309,6 +328,12 @@ Summarize <- function(txi, tx2gene, annotation, args, metadata, species) {
         tibble::rownames_to_column("gene_id") %>% 
         inner_join(annotation) %>%
         write.table(paste0(args[["--name"]], ".", species, ".counts.txt"), quote = FALSE, sep = "\t", row.names = F, col.names = T)
+        
+    message("Writing effective length matrix...")
+    as.data.frame(txi.gene$length) %>% 
+        tibble::rownames_to_column("gene_id") %>% 
+        inner_join(annotation) %>%
+        write.table(paste0(args[["--name"]], ".", species, ".length.txt"), quote = FALSE, sep = "\t", row.names = F, col.names = T)
     
     if (is.character(args[["--deseq-formula"]])) {
       message(paste("DEseq formula:", args[["--deseq-formula"]]))
