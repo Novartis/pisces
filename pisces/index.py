@@ -61,12 +61,55 @@ def build_index(args, unknown_args):
 
             transcripts_fasta_file = os.path.join(
                 index_dir_path, "transcripts", "transcripts.fa")
+                
             with open(transcripts_fasta_file, 'w') as transcripts_fasta:
-                for fasta in dataset["extra_fastas"]:
-                    with open(fasta) as extra:
+                ## all of this URI handling should probably use an existing library like
+                ## https://github.com/intake/filesystem_spec
+                for fasta_loc in dataset["extra_fastas"]:
+                    fasta = urlparse(fasta_loc)
+                    if fasta.scheme == '':
+                        reference = Fasta(fasta.path)
+                    elif fasta.scheme.lower() in ('ftp', 'http', 'https'):
+                        _fasta_local_path = os.path.join(
+                            download_dir, os.path.basename(fasta.path))
+                        logging.info("Downloading %s", fasta.geturl())
+                        if not os.path.exists(_fasta_local_path):
+                            with urlopen(fasta.geturl()) as _fasta:
+                                with open(_fasta_local_path,
+                                          'wb') as _fasta_local:
+                                    copyfileobj(_fasta, _fasta_local)
+                                    _fasta_local.flush()
+                                    if fasta.path.endswith('gz'):
+                                        logging.info("Decompressing %s",
+                                                     fasta.geturl())
+                                        call(
+                                            ' '.join([
+                                                'gzip -dc', _fasta_local_path,
+                                                '>',
+                                                _fasta_local_path.replace(
+                                                    ".gz", "")
+                                            ]),
+                                            shell=True)
+                        if _fasta_local_path.endswith("2bit"):
+                            logging.info("Converting %s to FASTA format",
+                                         fasta.geturl())
+                            twobit = TwoBitFile(_fasta_local_path)
+                            if not os.path.exists(
+                                    _fasta_local_path.replace("2bit", "fa")):
+                                with open(
+                                        _fasta_local_path.replace(
+                                            "2bit", "fa"), 'w') as fasta:
+                                    for chrom in twobit.keys():
+                                        fasta.write(">%s\n" % chrom)
+                                        fasta.write(str(twobit[chrom]) + '\n')
+                            reference = Fasta(
+                                _fasta_local_path.replace("2bit", "fa"))
+                    
+                    with open(_fasta_local_path) as extra:
                         logging.info("Adding entries from %s", fasta)
                         for line in extra:
                             transcripts_fasta.write(line)
+                            
                 for gtf_loc, fasta_loc in zip(dataset["gtfs"],
                                               dataset["fastas"]):
                     gtf = urlparse(gtf_loc)
