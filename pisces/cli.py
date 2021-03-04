@@ -59,16 +59,6 @@ def call_Rscript(args, unknown_args):
         ]
         cmd.extend(unknown_args)
         call(cmd)
-        
-def call_Rscript_dependencies(args, unknown_args):
-    """ Call an R script, passing through arguments from argparse. """
-    cmd = [
-        'Rscript',
-        os.path.join(data_dir, 'R/set_up_dependencies.R')
-    ]
-    cmd.extend(unknown_args)
-    call(cmd)
-
 
 def default_species_index(conf):
     """ Return a list of the default index builds for each species defined in args.conf """
@@ -249,13 +239,6 @@ def create_parser(args=None):
         "Compile an expression matrix from multiple individual PISCES runs",
         add_help=False)
     matrix.set_defaults(func=call_Rscript)
-    
-    dependencies = subparsers.add_parser(
-        'dependencies',
-        help=
-        "Install R dependencies for PISCES",
-        add_help=False)
-    dependencies.set_defaults(func=call_Rscript_dependencies)
 
     qc = subparsers.add_parser(
         'summarize-qc',
