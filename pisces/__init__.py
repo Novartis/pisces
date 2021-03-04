@@ -11,6 +11,7 @@ import atexit
 import string
 import random
 import shutil
+import platform
 from pprint import pformat
 from subprocess import Popen, PIPE
 from multiprocessing import Process

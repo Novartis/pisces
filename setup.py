@@ -4,7 +4,6 @@ import tarfile
 import zipfile
 import subprocess
 import logging
-import platform
 from setuptools import setup
 
 install_requires = [
