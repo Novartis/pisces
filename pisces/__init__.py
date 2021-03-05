@@ -14,7 +14,7 @@ import shutil
 import platform
 import tarfile
 from pprint import pformat
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, call
 from multiprocessing import Process
 from tempfile import NamedTemporaryFile, mkdtemp
 from functools import partial
