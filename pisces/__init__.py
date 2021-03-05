@@ -12,6 +12,7 @@ import string
 import random
 import shutil
 import platform
+import tarfile
 from pprint import pformat
 from subprocess import Popen, PIPE
 from multiprocessing import Process

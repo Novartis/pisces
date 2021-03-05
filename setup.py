@@ -1,9 +1,3 @@
-import os
-import sys
-import tarfile
-import zipfile
-import subprocess
-import logging
 from setuptools import setup
 
 install_requires = [
