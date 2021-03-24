@@ -389,7 +389,7 @@ deseq_analysis <- function(contrasts, txi.gene, contrast.metadata, formula, fail
     } else {
     deseq.dataset <- DESeqDataSetFromTximport(txi.gene, contrast.metadata, as.formula(paste0("~", contrasts$Factor[1])))}
   message(paste("Filtering", length(failing.quartile.filter), "genes failing --quartile-expression cutoff from DESeq2 dataset."))
-  deseq.dataset <- deseq.dataset[failing.quartile.filter,]
+  deseq.dataset <- deseq.dataset[-failing.quartile.filter,]
   message("Running DESeq2...")
   
   deseq.dataset <- DESeq(deseq.dataset)
