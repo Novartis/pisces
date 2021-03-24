@@ -275,9 +275,9 @@ Summarize <- function(txi, tx2gene, annotation, args, metadata, species) {
         # > seq(10)
         # [1]  1  2  3  4  5  6  7  8  9 10
         # > first_quartile(seq(10))
-        #[1] 3
+        #[1] 8
         y <- quantile(x, c(0.25, 0.5, 0.75), type=1) 
-        return(y[[1]])
+        return(y[[3]])
         }
     
     message(paste("Excluding", length(ribo.genes), "ribosomal genes from TMM scaling factor calulation."))
