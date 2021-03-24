@@ -272,10 +272,8 @@ Summarize <- function(txi, tx2gene, annotation, args, metadata, species) {
 
 
     first_quartile <- function(x) { 
-        # > seq(10)
-        # [1]  1  2  3  4  5  6  7  8  9 10
-        # > first_quartile(seq(10))
-        #[1] 8
+        # > first_quartile(c(0,0,0,0,0,0,0,1,10,10))
+        # [1] 1
         y <- quantile(x, c(0.25, 0.5, 0.75), type=1) 
         return(y[[3]])
         }
