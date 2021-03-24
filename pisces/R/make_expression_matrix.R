@@ -269,7 +269,14 @@ Summarize <- function(txi, tx2gene, annotation, args, metadata, species) {
       "genes."))
     ribo.genes <- which(grepl("^RP[SL]", scaled_df[, "symbol"], ignore.case = T))
     
-    first_quartile <- function(x) { y <- quantile(x, c(0.25, 0.5, 0.75), type=1)
+
+
+    first_quartile <- function(x) { 
+        # > seq(10)
+        # [1]  1  2  3  4  5  6  7  8  9 10
+        # > first_quartile(seq(10))
+        #[1] 3
+        y <- quantile(x, c(0.25, 0.5, 0.75), type=1) 
         return(y[[1]])
         }
     
