@@ -11,8 +11,10 @@ import atexit
 import string
 import random
 import shutil
+import platform
+import tarfile
 from pprint import pformat
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, call
 from multiprocessing import Process
 from tempfile import NamedTemporaryFile, mkdtemp
 from functools import partial
@@ -22,10 +24,45 @@ __version__ = get_distribution("novartis_pisces").version
 
 unique_id = ''.join(random.choice(string.digits) for _ in range(10))    
 
-
 def find_data_directory():
     """ Returns the path to the module directory """
     return os.path.dirname(os.path.abspath(__file__))
+
+def install_salmon():
+    """Install a version of salmon from bioconda"""
+    import glob
+    import requests
+    from io import BytesIO
+    from urllib.request import urlopen
+    from shutil import rmtree
+    from subprocess import call
+    
+    redist = os.path.join(find_data_directory(), 'redist')
+    rmtree(os.path.join(redist, "salmon"), ignore_errors=True)
+   
+    if platform.system() == "Linux":
+        salmon_url = "https://anaconda.org/bioconda/salmon/1.3.0/download/linux-64/salmon-1.3.0-hf69c8f4_0.tar.bz2"
+    elif platform.system() == "Darwin":
+        salmon_url = "https://anaconda.org/bioconda/salmon/1.3.0/download/osx-64/salmon-1.3.0-hb70dc8d_0.tar.bz2"
+
+    print("Installing salmon")
+    with requests.get(salmon_url, allow_redirects=True) as response:
+        tar_file = BytesIO(response.content)
+        tar_file.seek(0)
+        with tarfile.open(fileobj=tar_file) as tar:
+            tar.extractall(path=os.path.join(redist, "salmon"))
+            
+def install_r_dependencies():
+    """Install R dependencies"""
+    cmd = [
+        'Rscript',
+        os.path.join(find_data_directory(), 'R/set_up_dependencies.R')
+    ]
+    call(cmd)
+    
+def install_dependencies():
+    install_salmon()
+    install_r_dependencies()
 
 def sra_valid_accession(accession):
     """ Test whether a string is an SRA accession """

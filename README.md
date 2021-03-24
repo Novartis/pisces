@@ -16,7 +16,7 @@ Matthew D Shirley, Viveksagar K Radhakrishna, Javad Golji, Joshua M Korn. (Prepr
 Installation:
 ```
 $ pip install --user novartis-pisces
-$ pisces dependencies
+$ pisces_dependencies
 ```
 
 Submitting jobs to an HPC cluster:
