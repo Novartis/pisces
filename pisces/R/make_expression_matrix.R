@@ -269,8 +269,13 @@ Summarize <- function(txi, tx2gene, annotation, args, metadata, species) {
       "genes."))
     ribo.genes <- which(grepl("^RP[SL]", scaled_df[, "symbol"], ignore.case = T))
     
-    first_quartile <- function(x) { y <- quantile(x, c(0.25, 0.5, 0.75), type=1)
-        return(y[[1]])
+
+
+    first_quartile <- function(x) { 
+        # > first_quartile(c(0,0,0,0,0,0,0,1,10,10))
+        # [1] 1
+        y <- quantile(x, c(0.25, 0.5, 0.75), type=1) 
+        return(y[[3]])
         }
     
     message(paste("Excluding", length(ribo.genes), "ribosomal genes from TMM scaling factor calulation."))
@@ -389,7 +394,7 @@ deseq_analysis <- function(contrasts, txi.gene, contrast.metadata, formula, fail
     } else {
     deseq.dataset <- DESeqDataSetFromTximport(txi.gene, contrast.metadata, as.formula(paste0("~", contrasts$Factor[1])))}
   message(paste("Filtering", length(failing.quartile.filter), "genes failing --quartile-expression cutoff from DESeq2 dataset."))
-  deseq.dataset <- deseq.dataset[failing.quartile.filter,]
+  deseq.dataset <- deseq.dataset[-failing.quartile.filter,]
   message("Running DESeq2...")
   
   deseq.dataset <- DESeq(deseq.dataset)
