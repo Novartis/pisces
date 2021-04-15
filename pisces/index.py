@@ -266,10 +266,16 @@ def build_index(args, unknown_args):
                         """ 
                         """
                         sequences = []
+                        feature_strand = "."
                         for feature in features:
+                            feature_strand = feature.strand
                             sequences.append(
                                 feature.sequence(
                                     fasta_in, use_strand=strand))
+                        # if the transcript is on the reverse strand, reverse order of exons 
+                        # before concatenating
+                        if feature_strand == "-":
+                            sequences = sequences[::-1]
                         seq = ''.join(sequences)
                         mask_count = sum(seq.count(a) for a in soft_chars)
                         if masked:
