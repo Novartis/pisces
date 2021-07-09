@@ -271,7 +271,7 @@ def format_salmon_command(libtype, threads, index, output_dir, read1, read2,
                          'bin', 'salmon'), '--no-version-check', 'quant', '-q',
             '--index', index, '--libType', libtype, '--mates1', ' '.join(read1),
             '--mates2', ' '.join(read2), '--output', output_dir, '--threads',
-            str(threads), '--seqBias', '--useVBOpt'
+            str(threads), '--seqBias', '--gcBias', '--validateMappings', '--dumpEq'
         ]
     elif not read2:
         cmd = [
@@ -279,7 +279,7 @@ def format_salmon_command(libtype, threads, index, output_dir, read1, read2,
                          'bin', 'salmon'), '--no-version-check', 'quant', '-q',
             '--index', index, '--libType', libtype, '-r', ' '.join(read1), '--output',
             output_dir, '--threads',
-            str(threads), '--seqBias', '--useVBOpt'
+            str(threads), '--seqBias', '--gcBias', '--validateMappings', '--dumpEq'
         ]
     if make_bam:
         import shlex
