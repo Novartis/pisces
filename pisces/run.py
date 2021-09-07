@@ -64,7 +64,7 @@ def run(args, unknown_args):
         if args.fq2:
             sample_name = long_substr(tuple(chain(args.fq1.split(), args.fq2.split())))
         else:
-            sample_name = long_substr(tuple(chain(args.fq1, args.fq1)))
+            sample_name = long_substr(tuple(chain(args.fq1.split(), args.fq1.split())))
         sample_name = sample_name.split('/')[-1].split('_')[0]
         logging.info("Sample name: %s", sample_name)
         try:
