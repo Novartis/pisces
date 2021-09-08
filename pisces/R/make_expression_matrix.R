@@ -241,10 +241,9 @@ Summarize <- function(txi, tx2gene, annotation, args, metadata, species) {
       ".annotation.txt"), quote = FALSE, sep = "\t", row.names = F, col.names = T)
       
     message("Making gene-level length matrix...")  
-    as.data.frame(txi.gene$abundance) %>% tibble::rownames_to_column("gene_id") %>% 
-      left_join(annotation) %>% as.data.frame %>%
-      write.table(format(., nsmall = 3, scientific = F, trim = T), paste0(args[["--name"]], 
-      ".", species, ".length.txt"), quote = FALSE, sep = "\t", row.names = F, 
+    as.data.frame(txi.gene$length) %>% tibble::rownames_to_column("gene_id") %>% 
+      left_join(annotation) %>% as.data.frame %>% format(nsmall = 3, scientific = F, trim = T) %>%
+      write.table(paste0(args[["--name"]], ".", species, ".length.txt"), quote = FALSE, sep = "\t", row.names = F, 
       col.names = T)
     
     message("Making gene-level TPM matrix...")
