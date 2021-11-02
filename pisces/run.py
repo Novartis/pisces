@@ -67,7 +67,10 @@ def run(args, unknown_args):
             sample_name = long_substr(tuple(chain(args.fq1, args.fq1)))
         sample_name = sample_name.split('/')[-1].split('_')[0]
         logging.info("Sample name: %s", sample_name)
-        assert len(sample_name) > 0
+        try:
+            assert len(sample_name) > 0
+        except AssertionError:
+            raise RuntimeError("Output file naming failed; provide an output file basename with `--name`.")
     else:
         sample_name = args.name
 
