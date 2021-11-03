@@ -126,11 +126,17 @@ NormalizeSamples <- function(abundances, metadata, args) {
           experimentals)] + 1) - log2(apply(abundances[, c(controls)] + 1, 
           1, median))
       }
+    } else if (ncol(abundances) == 1) {
+    # only one sample
+    abundances <- log2(abundances + 1) - log2(abundances + 1)
     } else {
       # normalize to median of all samples
       message("Normalizing to median of all samples.")
       abundances <- log2(abundances + 1) - log2(apply(abundances + 1, 1, median))
     }
+  } else if (ncol(abundances) == 1) {
+    # only one sample
+    abundances <- log2(abundances + 1) - log2(abundances + 1)
   } else {
     # no metadata file
     message("Normalizing to median of all samples.")
@@ -139,10 +145,10 @@ NormalizeSamples <- function(abundances, metadata, args) {
   return(abundances)
 }
 
-rescaleTPM <- function(df, columns = colnames(df), rows = 1:nrow(df), precision = 3) {
-    sums.before.norm <- apply(df[rows, columns], 2, sum)
+rescaleTPM <- function(mat, columns = colnames(mat), rows = 1:nrow(mat), precision = 3) {
+    sums.before.norm <- apply(mat[rows, columns, drop=F], 2, sum)
     tpm.scale.factors <- 1e+06/sums.before.norm
-    scaled_df <- df
+    scaled_df <- mat
     scaled_df[rows, columns] <- data.frame(mapply("*", scaled_df[rows, 
         columns], tpm.scale.factors))
     scaled_df[, columns] <- round(scaled_df[, columns], precision)
@@ -221,9 +227,9 @@ Summarize <- function(txi, tx2gene, annotation, args, metadata, species) {
         write.table(paste0(args[["--name"]], ".", species, ".intergenes.length.txt"), quote = FALSE, sep = "\t", row.names = F, col.names = T)
         
     message("Building transcript QC measure table...")
-    pct_intronic <- colSums(txi$counts[intron.idx,]) / colSums(txi$counts[c(tx.idx, intron.idx, intergene.idx),]) * 100
-    pct_intergenic <- colSums(txi$counts[intergene.idx,]) / colSums(txi$counts[c(tx.idx, intron.idx, intergene.idx),]) * 100
-    pct_genic <- colSums(txi$counts[tx.idx,]) / colSums(txi$counts[c(tx.idx, intron.idx, intergene.idx),]) * 100
+    pct_intronic <- colSums(txi$counts[intron.idx,,drop=F]) / colSums(txi$counts[c(tx.idx, intron.idx, intergene.idx),,drop=F]) * 100
+    pct_intergenic <- colSums(txi$counts[intergene.idx,,drop=F]) / colSums(txi$counts[c(tx.idx, intron.idx, intergene.idx),,drop=F]) * 100
+    pct_genic <- colSums(txi$counts[tx.idx,,drop=F]) / colSums(txi$counts[c(tx.idx, intron.idx, intergene.idx),,drop=F]) * 100
     
     rbind(pct_genic, pct_intronic, pct_intergenic) -> qc_table
     rownames(qc_table) <- c("exonic", "intronic", "intergenic")
@@ -261,9 +267,9 @@ Summarize <- function(txi, tx2gene, annotation, args, metadata, species) {
       ".", species, ".TPM.txt"), quote = FALSE, sep = "\t", row.names = F, 
       col.names = T)
     normed_df <- scaled_df
-    normed_df[, abundance.cols] <- NormalizeSamples(normed_df[, abundance.cols], 
+    normed_df[, abundance.cols] <- NormalizeSamples(normed_df[, abundance.cols, drop=F], 
       metadata, args)
-    normed_df[, abundance.cols] <- round(normed_df[, abundance.cols], 3)
+    normed_df[, abundance.cols] <- round(normed_df[, abundance.cols, drop=F], 3)
     message("Making log2 fold change matrix...")
     write.table(format(normed_df, nsmall = 3, scientific = F, trim = T), paste0(args[["--name"]], 
       ".", species, ".log2fc.txt"), quote = FALSE, sep = "\t", row.names = F, 
@@ -285,7 +291,7 @@ Summarize <- function(txi, tx2gene, annotation, args, metadata, species) {
         }
     
     message(paste("Excluding", length(ribo.genes), "ribosomal genes from TMM scaling factor calulation."))
-    failing.quartile.filter <- which(apply(scaled_df[, abundance.cols], 1, first_quartile) < 
+    failing.quartile.filter <- which(apply(scaled_df[, abundance.cols, drop=F], 1, first_quartile) < 
       as.numeric(args[["quartile-expression"]]))
     message(paste(length(failing.quartile.filter), "genes failing --quartile-expression cutoff"))
     if (is.character(args[["--exclude-genes"]])) {
@@ -309,26 +315,26 @@ Summarize <- function(txi, tx2gene, annotation, args, metadata, species) {
     tmm.genes <- setdiff(tmm.genes, exclusion.list)
     
     
-    sums.before.norm <- apply(raw_df[tmm.genes, abundance.cols], 2, sum)
+    sums.before.norm <- apply(raw_df[tmm.genes, abundance.cols, drop=F], 2, sum)
     tpm.scale.factors <- 1e+06/sums.before.norm
     scaled_df <- raw_df
     if (!args[["--no-rescale"]]) {
       scaled_df[tmm.genes, abundance.cols] <- data.frame(mapply("*", scaled_df[tmm.genes, 
-        abundance.cols], tpm.scale.factors))
+        abundance.cols, drop=F], tpm.scale.factors))
     }
     message(paste("Using", length(tmm.genes), "genes for TMM factor calculation"))
-    tmm.factors <- calcNormFactors(scaled_df[tmm.genes, abundance.cols])
+    tmm.factors <- calcNormFactors(scaled_df[tmm.genes, abundance.cols, drop=F])
     tmm_df <- scaled_df
     tmm_df[to.rescale, abundance.cols] <- data.frame(mapply("/", tmm_df[to.rescale, 
-      abundance.cols], tmm.factors))
-    tmm_df[, abundance.cols] <- round(tmm_df[, abundance.cols], 3)
+      abundance.cols, drop=F], tmm.factors))
+    tmm_df[, abundance.cols] <- round(tmm_df[, abundance.cols, drop=F], 3)
     write.table(format(tmm_df, nsmall = 3, scientific = F, trim = T), paste0(args[["--name"]], 
       ".", species, ".TPM.TMM-scaled.txt"), quote = FALSE, sep = "\t", row.names = F, 
       col.names = T)
     normed_tmm_df <- tmm_df
-    normed_tmm_df[, abundance.cols] <- NormalizeSamples(normed_tmm_df[, abundance.cols], 
+    normed_tmm_df[, abundance.cols] <- NormalizeSamples(normed_tmm_df[, abundance.cols, drop=F], 
       metadata, args)
-    normed_tmm_df[, abundance.cols] <- round(normed_tmm_df[, abundance.cols], 
+    normed_tmm_df[, abundance.cols] <- round(normed_tmm_df[, abundance.cols, drop=F], 
       3)
     write.table(format(normed_tmm_df, nsmall = 3, scientific = F, trim = T), 
       paste0(args[["--name"]], ".", species, ".log2fc.TMM-scaled.txt"), quote = FALSE, 
@@ -531,9 +537,9 @@ min_length <- as.numeric(args[["--min-transcript-length"]])
 min_idx <- which(apply(txi.salmon.isoform$length, 1, max) > min_length)
 message(paste("Removing", length(which(apply(txi.salmon.isoform$length, 1, max) <= 
   min_length)), "transcripts less than", min_length, "bp."))
-txi.salmon.isoform$abundance <- txi.salmon.isoform$abundance[min_idx, ]
-txi.salmon.isoform$counts <- txi.salmon.isoform$counts[min_idx, ]
-txi.salmon.isoform$length <- txi.salmon.isoform$length[min_idx, ]
+txi.salmon.isoform$abundance <- txi.salmon.isoform$abundance[min_idx,,drop=F]
+txi.salmon.isoform$counts <- txi.salmon.isoform$counts[min_idx,,drop=F]
+txi.salmon.isoform$length <- txi.salmon.isoform$length[min_idx,,drop=F]
 
 for (assembly in this.config[["fastas"]]) {
   message("Reading gene and transcript annotations.")
