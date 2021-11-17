@@ -297,8 +297,37 @@ def build_index(args, unknown_args):
                                 total=db.count_features_of_type('gene'),
                                 unit='gene') as pbar:
                             for gene in db.features_of_type('gene'):
+                                first_exon = next(
+                                    db.children(
+                                        gene,
+                                        featuretype='exon',
+                                        order_by='start'))
+                                try:
+                                    if options["gene_type"] == True:
+                                        type_tag = "gene_type"
+                                    else:
+                                        type_tag = options["gene_type"]
+                                    gene_type = first_exon[type_tag][0]
+                                except KeyError:
+                                    logging.info("No gene type tag found for %s", gene['gene_id'][0])
+                                    gene_type = 'NA'
+                                try:
+                                    if options["gene_name"] == True:
+                                        name_tag = "gene_name"
+                                    else:
+                                        name_tag = options["gene_name"]
+                                    gene_name = first_exon[name_tag][0]
+                                except KeyError:
+                                    logging.info("No gene name tag found for %s", gene['gene_id'][0])
+                                    gene_name = 'NA'
+                                    
                                 transcripts = db.children(gene, featuretype='transcript', order_by='start')
                                 for transcript in transcripts:
+                                    # Write entry in the transcripts to genes table
+                                    gene2tx.write("{txp}\t{gene}\n".format(
+                                        gene=gene['gene_id'][0],
+                                        txp=transcript['transcript_id'][0]))
+                                    # Construct the transcript sequences and write them to the FASTA
                                     fa_seq, frac_masked = features_to_string(db.children(transcript, 
                                                                                    featuretype='exon', 
                                                                                    order_by='start'), 
@@ -306,30 +335,14 @@ def build_index(args, unknown_args):
                                                                        masked=options["masked"])
                                     transcripts_fasta.write('>' + transcript['transcript_id'][0] + '\n')
                                     transcripts_fasta.write(fa_seq + '\n')
+                                    
+                                exons = db.children(gene, featuretype='exon', order_by='start') 
+                                merged_exons = db.merge(exons, merge_criteria=(mc.seqid, mc.feature_type, mc.overlap_any_inclusive))
                                 if options["unprocessed_transcripts"]:
-                                    exons = db.children(gene, featuretype='exon', order_by='start') 
-                                    merged_exons = db.merge(exons, merge_criteria=(mc.seqid, mc.feature_type, mc.overlap_any_inclusive))
                                     introns = db.interfeatures(merged_exons, new_featuretype='intron')                                                     
                                     transcripts_fasta.write('>' + "intronic_" + gene['gene_id'][0] + '\n')
                                     fa_seq, _ = features_to_string(introns, reference, masked=options["masked"])
                                     transcripts_fasta.write(fa_seq + '\n')
-                                
-                                first_transcript = next(
-                                    db.children(
-                                        gene,
-                                        featuretype='transcript',
-                                        order_by='start'))
-                                try:
-                                    gene_type = first_transcript['gene_type'][0]
-                                except KeyError:
-                                    gene_type = 'NA'
-                                try:
-                                    gene_name = first_transcript['gene_name'][0]
-                                except KeyError:
-                                    gene_name = 'NA'
-                                    
-                                exons = db.children(gene, featuretype='exon', order_by='start') 
-                                merged_exons = db.merge(exons, merge_criteria=(mc.seqid, mc.feature_type, mc.overlap_any_inclusive))
                                 
                                 annotation.write(
                                     "{gene}\t{type}\t{name}\t{chrom}\t{start}\t{stop}\t{length}\t{frac_masked}\n".
@@ -342,14 +355,11 @@ def build_index(args, unknown_args):
                                         chrom=gene.chrom,
                                         length=sum(len(exon) for exon in merged_exons),
                                         frac_masked=str(frac_masked)))
+                                        
                                 transcripts = db.children(
                                     gene,
                                     featuretype='transcript',
                                     order_by='start')
-                                for transcript in transcripts:
-                                    gene2tx.write("{txp}\t{gene}\n".format(
-                                        gene=gene['gene_id'][0],
-                                        txp=transcript['transcript_id'][0]))
                                 pbar.update(1)
                             
                     if options["intergenes"]:
