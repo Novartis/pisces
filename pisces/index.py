@@ -360,8 +360,6 @@ def build_index(args, unknown_args):
                                     gene,
                                     featuretype='transcript',
                                     order_by='start')
-                                for transcript in transcripts:
-                                    
                                 pbar.update(1)
                             
                     if options["intergenes"]:
