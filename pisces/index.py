@@ -43,7 +43,7 @@ def build_index(args, unknown_args):
             if args.indices and index_name not in args.indices:
                 continue
             pprint(dataset, indent=4)
-            options = defaultdict(lambda: True)
+            options = defaultdict(lambda: False)
             options.update(dataset["options"])
             index_dir_path = os.path.join(index_dir_base, species, index_name)
             if os.path.exists(index_dir_path):
@@ -320,7 +320,7 @@ def build_index(args, unknown_args):
                                         featuretype='transcript',
                                         order_by='start'))
                                 try:
-                                    if options["gene_type"] == True:
+                                    if not options["gene_type"]:
                                         type_tag = "gene_type"
                                     else:
                                         type_tag = options["gene_type"]
@@ -329,7 +329,7 @@ def build_index(args, unknown_args):
                                     logging.info("No gene type tag found for %s", gene['gene_id'][0])
                                     gene_type = 'NA'
                                 try:
-                                    if options["gene_name"] == True:
+                                    if not options["gene_name"]:
                                         name_tag = "gene_name"
                                     else:
                                         name_tag = options["gene_name"]
