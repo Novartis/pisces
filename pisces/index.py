@@ -320,12 +320,22 @@ def build_index(args, unknown_args):
                                         featuretype='transcript',
                                         order_by='start'))
                                 try:
-                                    gene_type = first_transcript['gene_type'][0]
+                                    if options["gene_type"] == True:
+                                        type_tag = "gene_type"
+                                    else:
+                                        type_tag = options["gene_type"]
+                                    gene_type = first_transcript[type_tag][0]
                                 except KeyError:
+                                    logging.info("No gene type tag found for %s", gene['gene_id'][0])
                                     gene_type = 'NA'
                                 try:
-                                    gene_name = first_transcript['gene_name'][0]
+                                    if options["gene_name"] == True:
+                                        name_tag = "gene_name"
+                                    else:
+                                        name_tag = options["gene_name"]
+                                    gene_name = first_transcript[name_tag][0]
                                 except KeyError:
+                                    logging.info("No gene name tag found for %s", gene['gene_id'][0])
                                     gene_name = 'NA'
                                     
                                 exons = db.children(gene, featuretype='exon', order_by='start') 

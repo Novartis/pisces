@@ -10,7 +10,9 @@
                 "extra_fastas": [],
                 "options": {
                     "-k": 31,
-                    "infer_features": false
+                    "infer_features": false,
+                    "gtf_name_tag": "gene_name",
+                    "gtf_type_tag": "gene_type"
                 }
             }
         }
@@ -26,7 +28,9 @@
                 "extra_fastas": [],
                 "options": {
                     "-k": 31,
-                    "infer_features": false
+                    "infer_features": false,
+                    "gtf_name_tag": "gene_name",
+                    "gtf_type_tag": "gene_type"
                 }
             }
         }
@@ -44,7 +48,9 @@
                 "extra_fastas": [],
                 "options": {
                     "-k": 31,
-                    "infer_features": false
+                    "infer_features": false,
+                    "gtf_name_tag": "gene_name",
+                    "gtf_type_tag": "gene_type"
                 }
             }
         }
