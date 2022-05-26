@@ -22,7 +22,7 @@ from pkg_resources import get_distribution
 
 __version__ = get_distribution("novartis_pisces").version
 
-unique_id = ''.join(random.choice(string.digits) for _ in range(10))    
+unique_id = ''.join(random.choice(string.digits) for _ in range(10))
 
 def find_data_directory():
     """ Returns the path to the module directory """
@@ -36,10 +36,10 @@ def install_salmon():
     from urllib.request import urlopen
     from shutil import rmtree
     from subprocess import call
-    
+
     redist = os.path.join(find_data_directory(), 'redist')
     rmtree(os.path.join(redist, "salmon"), ignore_errors=True)
-   
+
     if platform.system() == "Linux":
         salmon_url = "https://anaconda.org/bioconda/salmon/1.3.0/download/linux-64/salmon-1.3.0-hf69c8f4_0.tar.bz2"
     elif platform.system() == "Darwin":
@@ -51,7 +51,7 @@ def install_salmon():
         tar_file.seek(0)
         with tarfile.open(fileobj=tar_file) as tar:
             tar.extractall(path=os.path.join(redist, "salmon"))
-            
+
 def install_r_dependencies():
     """Install R dependencies"""
     cmd = [
@@ -59,7 +59,7 @@ def install_r_dependencies():
         os.path.join(find_data_directory(), 'R/set_up_dependencies.R')
     ]
     call(cmd)
-    
+
 def install_dependencies():
     install_salmon()
     install_r_dependencies()
@@ -69,7 +69,7 @@ def sra_valid_accession(accession):
     if accession.startswith('SRR') and len(accession) == 10:
         return True
     return False
-    
+
 def long_substr(data):
     """ http://stackoverflow.com/questions/2892931/longest-common-substring-from-more-than-two-strings-python """
     substr = ''
@@ -149,7 +149,7 @@ def fingerprint_sample(args, fastq_1, fastq_2, data_dir, output_dir,
                 kmers2_outname, 'w') as kmers2_out:
             p1 = Popen(
                 [
-                    'fgrep', '-h', '-o', '-f',
+                    'zgrep', '-h', '-o', '-f',
                     os.path.join(data_dir, 'data/fp_kmers_col1.txt'),
                     ' '.join(fastq_1)
                 ],
@@ -157,7 +157,7 @@ def fingerprint_sample(args, fastq_1, fastq_2, data_dir, output_dir,
                 stderr=PIPE)
             p2 = Popen(
                 [
-                    'fgrep', '-h', '-o', '-f',
+                    'zgrep', '-h', '-o', '-f',
                     os.path.join(data_dir, 'data/fp_kmers_col1.txt'),
                     ' '.join(fastq_2)
                 ],
@@ -169,7 +169,7 @@ def fingerprint_sample(args, fastq_1, fastq_2, data_dir, output_dir,
         with open(kmers1_outname, 'w') as kmers1_out:
             p1 = Popen(
                 [
-                    'fgrep', '-h', '-o', '-f',
+                    'zgrep', '-h', '-o', '-f',
                     os.path.join(data_dir, 'data/fp_kmers_col1.txt'),
                     ' '.join(fastq_1)
                 ],
