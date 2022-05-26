@@ -149,7 +149,7 @@ def fingerprint_sample(args, fastq_1, fastq_2, data_dir, output_dir,
                 kmers2_outname, 'w') as kmers2_out:
             p1 = Popen(
                 [
-                    'zgrep', '-h', '-o', '-f',
+                    'zgrep', '-F', '-h', '-o', '-f',
                     os.path.join(data_dir, 'data/fp_kmers_col1.txt'),
                     ' '.join(fastq_1)
                 ],
@@ -157,7 +157,7 @@ def fingerprint_sample(args, fastq_1, fastq_2, data_dir, output_dir,
                 stderr=PIPE)
             p2 = Popen(
                 [
-                    'zgrep', '-h', '-o', '-f',
+                    'zgrep', '-F', '-h', '-o', '-f',
                     os.path.join(data_dir, 'data/fp_kmers_col1.txt'),
                     ' '.join(fastq_2)
                 ],
@@ -169,7 +169,7 @@ def fingerprint_sample(args, fastq_1, fastq_2, data_dir, output_dir,
         with open(kmers1_outname, 'w') as kmers1_out:
             p1 = Popen(
                 [
-                    'zgrep', '-h', '-o', '-f',
+                    'zgrep', '-F', '-h', '-o', '-f',
                     os.path.join(data_dir, 'data/fp_kmers_col1.txt'),
                     ' '.join(fastq_1)
                 ],
