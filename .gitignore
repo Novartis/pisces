@@ -1,2 +1,8 @@
 *.pyc
 .DS_Store
+.eggs
+.tox
+build
+dist
+docs
+*.egg-info
