@@ -150,8 +150,8 @@ rescaleTPM <- function(mat, columns = colnames(mat), rows = 1:nrow(mat), precisi
     tpm.scale.factors <- 1e+06/sums.before.norm
     scaled_df <- mat
     scaled_df[rows, columns] <- data.frame(mapply("*", scaled_df[rows, 
-        columns], tpm.scale.factors))
-    scaled_df[, columns] <- round(scaled_df[, columns], precision)
+        columns, drop=F], tpm.scale.factors))
+    scaled_df[, columns] <- round(scaled_df[, columns, drop=F], precision)
     return(scaled_df)
     }
     
