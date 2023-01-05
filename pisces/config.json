@@ -11,6 +11,7 @@
                 "options": {
                     "-k": 31,
                     "infer_features": false,
+                    "infer_dialect": true,
                     "gtf_name_tag": "gene_name",
                     "gtf_type_tag": "gene_type"
                 }
@@ -29,6 +30,7 @@
                 "options": {
                     "-k": 31,
                     "infer_features": false,
+                    "infer_dialect": true,
                     "gtf_name_tag": "gene_name",
                     "gtf_type_tag": "gene_type"
                 }
@@ -49,6 +51,7 @@
                 "options": {
                     "-k": 31,
                     "infer_features": false,
+                    "infer_dialect": true,
                     "gtf_name_tag": "gene_name",
                     "gtf_type_tag": "gene_type"
                 }

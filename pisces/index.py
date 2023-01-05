@@ -12,6 +12,7 @@ def build_index(args, unknown_args):
     import gffutils.merge_criteria as mc
     import atexit
     import shutil
+    import copy
     from tqdm import tqdm
     from collections import defaultdict
     from pprint import pprint
@@ -159,6 +160,19 @@ def build_index(args, unknown_args):
                         else:
                             reference = Fasta(_fasta_local_path)
 
+                    if not options["infer_dialect"]:
+                        ## set up a GTF dialect for gffutils
+                        from gffutils.constants import dialect as gff_dialect
+                        dialect = copy.copy(gff_dialect)
+                        dialect['field separator'] = '; '
+                        dialect['keyval separator'] = ' '
+                        dialect['fmt'] = 'gtf'
+                        dialect['quoted GFF2 values'] = True
+                        dialect['repeated keys'] = True
+                        dialect['trailing semicolon'] = True
+                    else:
+                        dialect = None
+
                     if gtf.scheme == '':
                         database_filename = gtf.path + '.db'
                         if os.path.exists(database_filename):
@@ -172,7 +186,7 @@ def build_index(args, unknown_args):
                                 db = gffutils.create_db(
                                     gtf.path,
                                     database_filename,
-                                    checklines=1,
+                                    dialect=dialect,
                                     disable_infer_genes=
                                     not options["infer_features"],
                                     disable_infer_transcripts=
@@ -189,7 +203,7 @@ def build_index(args, unknown_args):
                                     db = gffutils.create_db(
                                         gtf.path,
                                         tmp_db,
-                                        checklines=1,
+                                        dialect=dialect,
                                         disable_infer_genes=
                                         not options["infer_features"],
                                         disable_infer_transcripts=
@@ -222,7 +236,7 @@ def build_index(args, unknown_args):
                                             _gtf_local_path.replace(".gz", ""),
                                             _gtf_local_path.replace(
                                                 ".gz", "") + '.db',
-                                            checklines=1,
+                                            dialect=dialect,
                                             disable_infer_genes=
                                             not options["infer_features"],
                                             disable_infer_transcripts=
@@ -234,7 +248,7 @@ def build_index(args, unknown_args):
                                         db = gffutils.create_db(
                                             _gtf_local_path,
                                             _gtf_local_path + '.db',
-                                            checklines=1,
+                                            dialect=dialect,
                                             disable_infer_genes=
                                             not options["infer_features"],
                                             disable_infer_transcripts=
