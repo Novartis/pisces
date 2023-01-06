@@ -317,19 +317,19 @@ def build_index(args, unknown_args):
                                 unit='gene') as pbar:
                             for gene in db.features_of_type('gene'):
                                 try:
-                                    if options["gene_type"] == True:
-                                        type_tag = "gene_type"
+                                    if options["gtf_type_tag"] == True:
+                                        type_tag = "gene_biotype"
                                     else:
-                                        type_tag = options["gene_type"]
+                                        type_tag = options["gtf_type_tag"]
                                     gene_type = gene[type_tag][0]
                                 except KeyError:
                                     logging.info("No gene type tag found for %s", gene['gene_id'][0])
                                     gene_type = 'NA'
                                 try:
-                                    if options["gene_name"] == True:
-                                        name_tag = "gene_name"
+                                    if options["gtf_name_tag"] == True:
+                                        name_tag = "gene_id"
                                     else:
-                                        name_tag = options["gene_name"]
+                                        name_tag = options["gtf_name_tag"]
                                     gene_name = gene[name_tag][0]
                                 except KeyError:
                                     logging.info("No gene name tag found for %s", gene['gene_id'][0])
