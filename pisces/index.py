@@ -162,6 +162,7 @@ def build_index(args, unknown_args):
 
                     if not options["infer_dialect"]:
                         ## set up a GTF dialect for gffutils
+                        ## this dialect works for https://github.com/daler/gffutils/issues/198
                         from gffutils.constants import dialect as gff_dialect
                         dialect = copy.copy(gff_dialect)
                         dialect['field separator'] = '; '
@@ -315,17 +316,12 @@ def build_index(args, unknown_args):
                                 total=db.count_features_of_type('gene'),
                                 unit='gene') as pbar:
                             for gene in db.features_of_type('gene'):
-                                first_exon = next(
-                                    db.children(
-                                        gene,
-                                        featuretype='exon',
-                                        order_by='start'))
                                 try:
                                     if options["gene_type"] == True:
                                         type_tag = "gene_type"
                                     else:
                                         type_tag = options["gene_type"]
-                                    gene_type = first_exon[type_tag][0]
+                                    gene_type = gene[type_tag][0]
                                 except KeyError:
                                     logging.info("No gene type tag found for %s", gene['gene_id'][0])
                                     gene_type = 'NA'
@@ -334,7 +330,7 @@ def build_index(args, unknown_args):
                                         name_tag = "gene_name"
                                     else:
                                         name_tag = options["gene_name"]
-                                    gene_name = first_exon[name_tag][0]
+                                    gene_name = gene[name_tag][0]
                                 except KeyError:
                                     logging.info("No gene name tag found for %s", gene['gene_id'][0])
                                     gene_name = 'NA'
