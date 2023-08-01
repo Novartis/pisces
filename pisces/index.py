@@ -12,6 +12,7 @@ def build_index(args, unknown_args):
     import gffutils.merge_criteria as mc
     import atexit
     import shutil
+    import copy
     from tqdm import tqdm
     from collections import defaultdict
     from pprint import pprint
@@ -61,7 +62,7 @@ def build_index(args, unknown_args):
 
             transcripts_fasta_file = os.path.join(
                 index_dir_path, "transcripts", "transcripts.fa")
-                
+
             with open(transcripts_fasta_file, 'w') as transcripts_fasta:
                 ## all of this URI handling should probably use an existing library like
                 ## https://github.com/intake/filesystem_spec
@@ -104,12 +105,12 @@ def build_index(args, unknown_args):
                                         fasta.write(str(twobit[chrom]) + '\n')
                             reference = Fasta(
                                 _fasta_local_path.replace("2bit", "fa"))
-                    
+
                     with open(_fasta_local_path) as extra:
                         logging.info("Adding entries from %s", fasta)
                         for line in extra:
                             transcripts_fasta.write(line)
-                            
+
                 for gtf_loc, fasta_loc in zip(dataset["gtfs"],
                                               dataset["fastas"]):
                     gtf = urlparse(gtf_loc)
@@ -159,6 +160,20 @@ def build_index(args, unknown_args):
                         else:
                             reference = Fasta(_fasta_local_path)
 
+                    if not options["infer_dialect"]:
+                        ## set up a GTF dialect for gffutils
+                        ## this dialect works for https://github.com/daler/gffutils/issues/198
+                        from gffutils.constants import dialect as gff_dialect
+                        dialect = copy.copy(gff_dialect)
+                        dialect['field separator'] = '; '
+                        dialect['keyval separator'] = ' '
+                        dialect['fmt'] = 'gtf'
+                        dialect['quoted GFF2 values'] = True
+                        dialect['repeated keys'] = True
+                        dialect['trailing semicolon'] = True
+                    else:
+                        dialect = None
+
                     if gtf.scheme == '':
                         database_filename = gtf.path + '.db'
                         if os.path.exists(database_filename):
@@ -172,6 +187,7 @@ def build_index(args, unknown_args):
                                 db = gffutils.create_db(
                                     gtf.path,
                                     database_filename,
+                                    dialect=dialect,
                                     disable_infer_genes=
                                     not options["infer_features"],
                                     disable_infer_transcripts=
@@ -188,6 +204,7 @@ def build_index(args, unknown_args):
                                     db = gffutils.create_db(
                                         gtf.path,
                                         tmp_db,
+                                        dialect=dialect,
                                         disable_infer_genes=
                                         not options["infer_features"],
                                         disable_infer_transcripts=
@@ -220,6 +237,7 @@ def build_index(args, unknown_args):
                                             _gtf_local_path.replace(".gz", ""),
                                             _gtf_local_path.replace(
                                                 ".gz", "") + '.db',
+                                            dialect=dialect,
                                             disable_infer_genes=
                                             not options["infer_features"],
                                             disable_infer_transcripts=
@@ -231,6 +249,7 @@ def build_index(args, unknown_args):
                                         db = gffutils.create_db(
                                             _gtf_local_path,
                                             _gtf_local_path + '.db',
+                                            dialect=dialect,
                                             disable_infer_genes=
                                             not options["infer_features"],
                                             disable_infer_transcripts=
@@ -261,9 +280,9 @@ def build_index(args, unknown_args):
                     gene_annotation = os.path.join(
                         index_dir_path,
                         assembly + "_gene_annotation.txt")
-                        
+
                     def features_to_string(features, fasta_in, masked=True, strand=True):
-                        """ 
+                        """
                         """
                         sequences = []
                         feature_strand = "."
@@ -272,7 +291,7 @@ def build_index(args, unknown_args):
                             sequences.append(
                                 feature.sequence(
                                     fasta_in, use_strand=strand))
-                        # if the transcript is on the reverse strand, reverse order of exons 
+                        # if the transcript is on the reverse strand, reverse order of exons
                         # before concatenating
                         if feature_strand == "-":
                             sequences = sequences[::-1]
@@ -297,30 +316,25 @@ def build_index(args, unknown_args):
                                 total=db.count_features_of_type('gene'),
                                 unit='gene') as pbar:
                             for gene in db.features_of_type('gene'):
-                                first_exon = next(
-                                    db.children(
-                                        gene,
-                                        featuretype='exon',
-                                        order_by='start'))
                                 try:
-                                    if options["gene_type"] == True:
-                                        type_tag = "gene_type"
+                                    if options["gtf_type_tag"] == True:
+                                        type_tag = "gene_biotype"
                                     else:
-                                        type_tag = options["gene_type"]
-                                    gene_type = first_exon[type_tag][0]
+                                        type_tag = options["gtf_type_tag"]
+                                    gene_type = gene[type_tag][0]
                                 except KeyError:
                                     logging.info("No gene type tag found for %s", gene['gene_id'][0])
                                     gene_type = 'NA'
                                 try:
-                                    if options["gene_name"] == True:
-                                        name_tag = "gene_name"
+                                    if options["gtf_name_tag"] == True:
+                                        name_tag = "gene_id"
                                     else:
-                                        name_tag = options["gene_name"]
-                                    gene_name = first_exon[name_tag][0]
+                                        name_tag = options["gtf_name_tag"]
+                                    gene_name = gene[name_tag][0]
                                 except KeyError:
                                     logging.info("No gene name tag found for %s", gene['gene_id'][0])
                                     gene_name = 'NA'
-                                    
+
                                 transcripts = db.children(gene, featuretype='transcript', order_by='start')
                                 for transcript in transcripts:
                                     # Write entry in the transcripts to genes table
@@ -328,22 +342,22 @@ def build_index(args, unknown_args):
                                         gene=gene['gene_id'][0],
                                         txp=transcript['transcript_id'][0]))
                                     # Construct the transcript sequences and write them to the FASTA
-                                    fa_seq, frac_masked = features_to_string(db.children(transcript, 
-                                                                                   featuretype='exon', 
-                                                                                   order_by='start'), 
-                                                                       reference, 
+                                    fa_seq, frac_masked = features_to_string(db.children(transcript,
+                                                                                   featuretype='exon',
+                                                                                   order_by='start'),
+                                                                       reference,
                                                                        masked=options["masked"])
                                     transcripts_fasta.write('>' + transcript['transcript_id'][0] + '\n')
                                     transcripts_fasta.write(fa_seq + '\n')
-                                    
-                                exons = db.children(gene, featuretype='exon', order_by='start') 
+
+                                exons = db.children(gene, featuretype='exon', order_by='start')
                                 merged_exons = db.merge(exons, merge_criteria=(mc.seqid, mc.feature_type, mc.overlap_any_inclusive))
                                 if options["unprocessed_transcripts"]:
-                                    introns = db.interfeatures(merged_exons, new_featuretype='intron')                                                     
+                                    introns = db.interfeatures(merged_exons, new_featuretype='intron')
                                     transcripts_fasta.write('>' + "intronic_" + gene['gene_id'][0] + '\n')
                                     fa_seq, _ = features_to_string(introns, reference, masked=options["masked"])
                                     transcripts_fasta.write(fa_seq + '\n')
-                                
+
                                 annotation.write(
                                     "{gene}\t{type}\t{name}\t{chrom}\t{start}\t{stop}\t{length}\t{frac_masked}\n".
                                     format(
@@ -355,13 +369,13 @@ def build_index(args, unknown_args):
                                         chrom=gene.chrom,
                                         length=sum(len(exon) for exon in merged_exons),
                                         frac_masked=str(frac_masked)))
-                                        
+
                                 transcripts = db.children(
                                     gene,
                                     featuretype='transcript',
                                     order_by='start')
                                 pbar.update(1)
-                            
+
                     if options["intergenes"]:
                         for seqid in reference.keys():
                             logging.info("Merging overlapping genes on %s", seqid)
