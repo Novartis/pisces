@@ -191,7 +191,8 @@ def build_index(args, unknown_args):
                                     disable_infer_genes=
                                     not options["infer_features"],
                                     disable_infer_transcripts=
-                                    not options["infer_features"])
+                                    not options["infer_features"],
+                                    merge_strategy='create_unique')
                             except:
                                 tmp_db = os.path.join(download_dir, os.path.basename(gtf.path) + '.db')
                                 logging.info(
@@ -208,7 +209,8 @@ def build_index(args, unknown_args):
                                         disable_infer_genes=
                                         not options["infer_features"],
                                         disable_infer_transcripts=
-                                        not options["infer_features"])
+                                        not options["infer_features"],
+                                        merge_strategy='create_unique')
                     elif gtf.scheme.lower() in ('ftp', 'http', 'https'):
                         _gtf_local_path = os.path.join(download_dir,
                                                        os.path.basename(
@@ -241,7 +243,8 @@ def build_index(args, unknown_args):
                                             disable_infer_genes=
                                             not options["infer_features"],
                                             disable_infer_transcripts=
-                                            not options["infer_features"])
+                                            not options["infer_features"],
+                                            merge_strategy='create_unique')
                                     else:
                                         logging.info(
                                             "Creating GTF database file. This will take some time..."
@@ -253,7 +256,8 @@ def build_index(args, unknown_args):
                                             disable_infer_genes=
                                             not options["infer_features"],
                                             disable_infer_transcripts=
-                                            not options["infer_features"])
+                                            not options["infer_features"],
+                                            merge_strategy='create_unique')
                         elif gtf.path.endswith('gz'):
                             logging.info("Loading existing GTF database file.")
                             db = gffutils.FeatureDB(
@@ -264,9 +268,6 @@ def build_index(args, unknown_args):
 
                     # https://github.com/daler/gffutils/issues/56
                     db.execute('ANALYZE features')
-                    #if db.count_features_of_type('intron') == 0 and options["unprocessed_transcripts"]:
-                        #logging.info("Inferring intronic sequences...")
-                        #db.update(db.create_introns())
                     soft_chars = set(('a', 'c', 'g', 't'))
 
                     if not options["-k"]:
