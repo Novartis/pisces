@@ -336,7 +336,9 @@ def build_index(args, unknown_args):
                                     logging.info("No gene name tag found for %s", gene['gene_id'][0])
                                     gene_name = 'NA'
 
-                                transcripts = db.children(gene, featuretype='transcript', order_by='start')
+                                transcripts = tuple(db.children(gene, featuretype='transcript', order_by='start'))
+                                if len(transcripts) == 0:  # gene that has no transcripts
+                                    continue  # gene will have no transcript sequence or exons
                                 for transcript in transcripts:
                                     # Write entry in the transcripts to genes table
                                     gene2tx.write("{txp}\t{gene}\n".format(
@@ -371,10 +373,6 @@ def build_index(args, unknown_args):
                                         length=sum(len(exon) for exon in merged_exons),
                                         frac_masked=str(frac_masked)))
 
-                                transcripts = db.children(
-                                    gene,
-                                    featuretype='transcript',
-                                    order_by='start')
                                 pbar.update(1)
 
                     if options["intergenes"]:
