@@ -339,11 +339,11 @@ def build_index(args, unknown_args):
                                 transcripts = tuple(db.children(gene, featuretype='transcript', order_by='start'))
                                 if len(transcripts) == 0:  # gene that has no transcripts
                                     continue  # gene will have no transcript sequence or exons
-                                try:
-                                    transcript['transcript_id']
-                                except KeyError:
-                                    continue  # transcript id is missing (ex TRNAV-CAC gene in RefSeq)
                                 for transcript in transcripts:
+                                    try:
+                                        transcript['transcript_id']
+                                    except KeyError:
+                                        continue  # transcript id is missing (ex TRNAV-CAC gene in RefSeq)
                                     # Write entry in the transcripts to genes table
                                     gene2tx.write("{txp}\t{gene}\n".format(
                                         gene=gene['gene_id'][0],
