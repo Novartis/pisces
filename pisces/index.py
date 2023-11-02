@@ -316,6 +316,7 @@ def build_index(args, unknown_args):
                         with tqdm(
                                 total=db.count_features_of_type('gene'),
                                 unit='gene') as pbar:
+                            transcripts_to_index = set()
                             for gene in db.features_of_type('gene'):
                                 try:
                                     if options["gtf_type_tag"] == True:
@@ -344,6 +345,9 @@ def build_index(args, unknown_args):
                                         transcript['transcript_id']
                                     except KeyError:
                                         continue  # transcript id is missing (ex TRNAV-CAC gene in RefSeq)
+                                    if transcript['transcript_id'][0] in transcripts_to_index:
+                                        logging.warn("Duplicate transcript %s will be dropped!", transcript['transcript_id'][0])
+                                        continue
                                     # Write entry in the transcripts to genes table
                                     gene2tx.write("{txp}\t{gene}\n".format(
                                         gene=gene['gene_id'][0],
@@ -356,6 +360,7 @@ def build_index(args, unknown_args):
                                                                        masked=options["masked"])
                                     transcripts_fasta.write('>' + transcript['transcript_id'][0] + '\n')
                                     transcripts_fasta.write(fa_seq + '\n')
+                                    transcripts_to_index.add(transcript['transcript_id'][0])
 
                                 exons = db.children(gene, featuretype='exon', order_by='start')
                                 merged_exons = db.merge(exons, merge_criteria=(mc.seqid, mc.feature_type, mc.overlap_any_inclusive))
