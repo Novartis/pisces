@@ -27,6 +27,9 @@ jobs:
         uses: r-lib/actions/setup-r@master
         with:
             r-version: '3.6.2'
+
+      - name: Install renv
+        run: Rscript -e "install.packages(c('renv'), repos='https://cran.rstudio.com')"
             
       - name: Install python packages
         run: pip install tox
