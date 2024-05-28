@@ -65,6 +65,16 @@ explicitly, or default to automatic values.
 
 .. command-output:: pisces run --help
 
+The (``-t, --sample-type``) flag is used to specify the species name, 
+which will select the index files ``salmon quant`` uses to quantify transcript expression from the selected 
+set of fastq files. The species name is the top level key in the :doc:`config` file. If the ``--sample-type`` 
+defines a transcriptome composed of transcripts from multiple species/assemblies (GTF/FASTA pairs), the 
+transcript expression will be quantified using a single combined index with transcript abundance jointly 
+calculated on all transcripts from the composite transcriptome. The ``pisces summarize-expression`` command will separate transcript and gene 
+expression estimantes (counts and TPM) into separate output tables for each species/assembly and re-scale TPM values as if the 
+transcript and gene expression were estimated independently. This method ensures that sequence reads which map ambiguously 
+between similar transcripts will be assigned to the most likely transcript during quantification.
+
 .. _submit_example:
 
 pisces submit
