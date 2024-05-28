@@ -6,3 +6,4 @@ build
 dist
 docs
 *.egg-info
+.vscode/settings.json
