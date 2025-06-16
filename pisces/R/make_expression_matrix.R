@@ -13,7 +13,7 @@ getScriptPath <- function() {
 script.dir <- getScriptPath()
 wd.old <- getwd()
 setwd(script.dir)
-renv::activate() 
+source("renv/activate.R")
 setwd(wd.old)
 suppressMessages(library(tximport))
 suppressMessages(library(docopt))
