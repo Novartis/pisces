@@ -35,8 +35,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository_owner || github.actor }}
-            /pisces:latest
+          tags: ghcr.io/mdshw5/pisces:latest
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
