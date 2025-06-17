@@ -14,6 +14,8 @@ This will build salmon index files for human, mouse, and human-mouse sample type
 
 .. note::
 
+    PISCES will automatically use the system installation of Salmon if it is available in your PATH. If not found, it will fall back to the bundled version included with PISCES. You do not need to specify the path manually.
+
 	If index output folders exist, they will not be overwritten, as PISCES assumes the index has already been built.
 
 You can also pass in a custom ``--config`` file:
