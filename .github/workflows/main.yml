@@ -35,7 +35,7 @@ jobs:
             r-version: 'release'
             
       - name: Install python packages
-        run: pip install tox
+        run: pip install tox pytest
     
       - name: Tox
         run: tox -e py39
