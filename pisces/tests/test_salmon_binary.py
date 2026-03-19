@@ -31,3 +31,22 @@ def test_find_salmon_binary_not_found(tmp_path, monkeypatch):
     monkeypatch.setenv('PATH', '')
     with pytest.raises(FileNotFoundError):
         find_salmon_binary(str(tmp_path))
+
+
+def test_find_salmon_binary_env_override(tmp_path, monkeypatch):
+    # PISCES_SALMON should take precedence over PATH and bundled
+    monkeypatch.setenv('PATH', '')
+    data_dir = tmp_path
+    salmon_override = data_dir / 'fake_salmon'
+    salmon_override.write_text('#!/bin/bash\necho salmon')
+    os.chmod(salmon_override, 0o755)
+    monkeypatch.setenv('PISCES_SALMON', str(salmon_override))
+    path = find_salmon_binary(str(data_dir))
+    assert path == str(salmon_override)
+
+
+def test_find_salmon_binary_env_override_invalid(monkeypatch):
+    monkeypatch.setenv('PATH', '')
+    monkeypatch.setenv('PISCES_SALMON', '/tmp/not-a-real-salmon')
+    with pytest.raises(FileNotFoundError):
+        find_salmon_binary('/tmp')

@@ -264,16 +264,28 @@ def run_salmon(fastq_1, fastq_2, index_dir_path, threads, libtype, output_dir,
 
 
 def find_salmon_binary(data_dir):
-    """Return path to salmon binary: system if in PATH, else bundled version."""
+    """Return path to salmon binary: PISCES_SALMON override, then PATH, then bundled version."""
+    env_salmon = os.environ.get('PISCES_SALMON')
+    if env_salmon:
+        if os.path.isfile(env_salmon) and os.access(env_salmon, os.X_OK):
+            logging.info(f"Using PISCES_SALMON binary at {env_salmon}")
+            return env_salmon
+        raise FileNotFoundError(
+            f"PISCES_SALMON is set to '{env_salmon}', but file is missing or not executable.")
+
     salmon_path = shutil.which('salmon')
     if salmon_path:
         logging.info(f"Using system salmon binary at {salmon_path}")
         return salmon_path
+
     bundled = os.path.join(data_dir, 'redist', 'salmon', 'bin', 'salmon')
     if os.path.exists(bundled):
         logging.info(f"Using bundled salmon binary at {bundled}")
         return bundled
-    raise FileNotFoundError("No salmon binary found in PATH or bundled location.")
+
+    raise FileNotFoundError(
+        "No salmon binary found in PISCES_SALMON, PATH, or bundled location.")
+
 
 def format_salmon_command(libtype, threads, index, output_dir, read1, read2,
                           data_dir, make_bam):
