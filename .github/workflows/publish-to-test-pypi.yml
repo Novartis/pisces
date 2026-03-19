@@ -25,13 +25,13 @@ jobs:
         run: tox -e package
             
       - name: Publish to test PyPI
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
             password: ${{ secrets.test_pypi_password }}
             repository_url: https://test.pypi.org/legacy/
             
       - name: Publish to tagged release to PyPI
         if: startsWith(github.ref, 'refs/tags')
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
             password: ${{ secrets.pypi_password }}
