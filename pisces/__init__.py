@@ -18,9 +18,13 @@ from subprocess import Popen, PIPE, call
 from multiprocessing import Process
 from tempfile import NamedTemporaryFile, mkdtemp
 from functools import partial
-from pkg_resources import get_distribution
+try:
+    from importlib.metadata import version
+except ImportError:
+    from pkg_resources import get_distribution
+    version = lambda name: get_distribution(name).version
 
-__version__ = get_distribution("novartis_pisces").version
+__version__ = version("novartis-pisces")
 
 unique_id = ''.join(random.choice(string.digits) for _ in range(10))
 
