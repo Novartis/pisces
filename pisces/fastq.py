@@ -12,7 +12,6 @@ from six import PY3, PY2, string_types
 from subprocess import Popen, PIPE
 from io import TextIOWrapper
 import os.path
-from pkg_resources import get_distribution
 
 if PY2:
     import string
