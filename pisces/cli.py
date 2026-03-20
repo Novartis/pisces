@@ -21,9 +21,13 @@ from subprocess import Popen, PIPE, call
 from collections import OrderedDict, defaultdict
 from tqdm import tqdm
 from pisces import find_data_directory
-from pkg_resources import get_distribution
+try:
+    from importlib.metadata import version
+except ImportError:
+    from pkg_resources import get_distribution
+    version = lambda name: get_distribution(name).version
 
-__version__ = get_distribution("novartis_pisces").version
+__version__ = version("novartis-pisces")
 
 data_dir = find_data_directory()
 

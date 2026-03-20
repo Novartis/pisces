@@ -9,9 +9,13 @@ import stat
 import pickle
 import pandas as pd
 import time
-from pkg_resources import get_distribution
+try:
+    from importlib.metadata import version
+except ImportError:
+    from pkg_resources import get_distribution
+    version = lambda name: get_distribution(name).version
 
-__version__ = get_distribution("novartis_pisces").version
+__version__ = version("novartis-pisces")
 
 def _submit_drmaa(args, unknown_args):
     """ Submit multiple 'pisces run' jobs to the cluster using libdrmaa """
