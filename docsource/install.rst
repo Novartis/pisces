@@ -23,4 +23,8 @@ Testing your PISCES installation
 
 	# run the python module unit tests
 	$ python -m tox
-  
+
+.. note::
+
+    PISCES will automatically use the system installation of Salmon if it is available in your PATH. If not found, it will fall back to the bundled version included with PISCES.
+

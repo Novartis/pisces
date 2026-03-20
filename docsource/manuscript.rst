@@ -302,7 +302,7 @@ datasets across experiments.
 ----------------------------------------------------------------------------------
 
 PISCES uses salmon :cite:`Patro2017` for estimating transcript and gene
-abundances from RNAseq libraries. 
+abundances from RNAseq libraries. By default, PISCES will use the system installation of Salmon if it is available in your PATH. If not, it will use the bundled version included with PISCES.
 Salmon is computationally efficient as well as accurate in assignment of reads
 to transcripts :cite:`srivastava2020alignment`. PISCES includes Salmon version
 1.3.0. Library

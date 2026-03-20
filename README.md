@@ -19,6 +19,10 @@ $ pip install --user novartis-pisces
 $ pisces_dependencies
 ```
 
+An appropriate salmon binary will be downloaded as part of `pisces_dependencies` execution. This 
+bundled version of salmon will be ignored if an existing salmon executable is found in the `$PATH` 
+or is specified in the `$PISCES_SALMON` environment variable.
+
 Submitting jobs to an HPC cluster:
 ```
 $ pisces submit -m metadata.csv

@@ -1,9 +1,13 @@
 import logging
 import os
 from pisces import find_data_directory
-from pkg_resources import get_distribution
+try:
+    from importlib.metadata import version
+except ImportError:
+    from pkg_resources import get_distribution
+    version = lambda name: get_distribution(name).version
 
-__version__ = get_distribution("novartis_pisces").version
+__version__ = version("novartis-pisces")
 
 def build_index(args, unknown_args):
     from pyfaidx import Fasta
@@ -391,9 +395,10 @@ def build_index(args, unknown_args):
             # This needs to happen outside of context handler so FASTA file can be closed properly
             logging.info("Making salmon index files for %s",
                          species + '/' + index_name)
+            data_dir = find_data_directory()
+            salmon_bin = find_salmon_binary(data_dir)
             cmd = [
-                os.path.join(find_data_directory(), 'redist', 'salmon',
-                             'bin', 'salmon'), 'index', '-p',
+                salmon_bin, 'index', '-p',
                 str(args.threads), '-k',
                 str(k), '-t', transcripts_fasta.name, '-i',
                 os.path.join(index_dir_path, "salmon")
