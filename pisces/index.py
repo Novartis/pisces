@@ -72,8 +72,11 @@ def build_index(args, unknown_args):
                 ## https://github.com/intake/filesystem_spec
                 for fasta_loc in dataset["extra_fastas"]:
                     fasta = urlparse(fasta_loc)
+                    _fasta_file_to_read = None
                     if fasta.scheme == '':
-                        reference = Fasta(fasta.path)
+                        _fasta_local_path = fasta.path
+                        _fasta_file_to_read = _fasta_local_path
+                        reference = Fasta(_fasta_local_path)
                     elif fasta.scheme.lower() in ('ftp', 'http', 'https'):
                         _fasta_local_path = os.path.join(
                             download_dir, os.path.basename(fasta.path))
@@ -99,18 +102,20 @@ def build_index(args, unknown_args):
                             logging.info("Converting %s to FASTA format",
                                          fasta.geturl())
                             twobit = TwoBitFile(_fasta_local_path)
-                            if not os.path.exists(
-                                    _fasta_local_path.replace("2bit", "fa")):
-                                with open(
-                                        _fasta_local_path.replace(
-                                            "2bit", "fa"), 'w') as fasta:
+                            _fasta_fa_path = _fasta_local_path.replace("2bit", "fa")
+                            if not os.path.exists(_fasta_fa_path):
+                                with open(_fasta_fa_path, 'w') as fasta:
                                     for chrom in twobit.keys():
                                         fasta.write(">%s\n" % chrom)
                                         fasta.write(str(twobit[chrom]) + '\n')
-                            reference = Fasta(
-                                _fasta_local_path.replace("2bit", "fa"))
+                            reference = Fasta(_fasta_fa_path)
+                            _fasta_file_to_read = _fasta_fa_path
+                        elif _fasta_local_path.endswith('gz'):
+                            _fasta_file_to_read = _fasta_local_path.replace(".gz", "")
+                        else:
+                            _fasta_file_to_read = _fasta_local_path
 
-                    with open(_fasta_local_path) as extra:
+                    with open(_fasta_file_to_read) as extra:
                         logging.info("Adding entries from %s", fasta)
                         for line in extra:
                             transcripts_fasta.write(line)
