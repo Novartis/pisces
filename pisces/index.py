@@ -1,6 +1,6 @@
 import logging
 import os
-from pisces import find_data_directory
+from pisces import find_data_directory, find_salmon_binary
 try:
     from importlib.metadata import version
 except ImportError:
@@ -21,10 +21,10 @@ def build_index(args, unknown_args):
     from collections import defaultdict
     from pprint import pprint
     from tempfile import NamedTemporaryFile
-    from urllib.parse import urlparse
+    from urllib.parse import urlparse, quote
     from urllib.request import urlopen
     from shutil import copyfileobj
-    from subprocess import Popen, PIPE, call
+    from subprocess import Popen, PIPE, call, CalledProcessError
 
     if args.debug:
         log_level = logging.DEBUG
@@ -358,7 +358,7 @@ def build_index(args, unknown_args):
                                 merged_exons = db.merge(exons, merge_criteria=(mc.seqid, mc.feature_type, mc.overlap_any_inclusive))
                                 if options["unprocessed_transcripts"]:
                                     introns = db.interfeatures(merged_exons, new_featuretype='intron')
-                                    transcripts_fasta.write('>' + "intronic_" + gene['gene_id'][0] + '\n')
+                                    transcripts_fasta.write('>' + "intronic_" + quote(gene.id, safe='') + '\n')
                                     fa_seq, _ = features_to_string(introns, reference, masked=options["masked"])
                                     transcripts_fasta.write(fa_seq + '\n')
 
@@ -411,4 +411,5 @@ def build_index(args, unknown_args):
                     logging.info(line.rstrip())
                 else:
                     logging.info(line)
-            logging.info(line)
+            if p.wait() != 0:
+                raise CalledProcessError(p.returncode, cmd)
